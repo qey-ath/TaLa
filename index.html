@@ -1,0 +1,2803 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tala (Tani Langsung) — Dari Kebun Langsung ke Meja Anda</title>
+
+  <!-- Google Fonts: DM Sans (Heading) & Inter (Body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,500;0,9..40,700;0,9..40,800;1,9..40,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Konfigurasi Font & Warna Kustom Tailwind -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            heading: ['"DM Sans"', 'system-ui', 'sans-serif'],
+            sans: ['"Inter"', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            tala: {
+              bg: '#F9FBF7',
+              border: '#D8E6CE',
+              softGreen: '#ECF4E6',
+              softBlue: '#E6F4FA',
+              primary: '#437A1E',
+              primaryHover: '#356316',
+              sky: '#0284C7',
+              skyHover: '#0369A1',
+              magenta: '#D9268A',
+              lime: '#A3E635',
+              dark: '#162415',
+              muted: '#526350',
+            }
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="min-h-screen bg-tala-bg text-tala-dark font-sans flex flex-col selection:bg-tala-primary selection:text-white">
+
+  <!-- ========================================================================
+       HEADER / NAVBAR
+       ======================================================================== -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-tala-border">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-20">
+        <!-- Logo Tala -->
+        <button onclick="navigateTo('home')" class="flex items-center gap-3 text-left focus:outline-none group">
+          <div id="navbar-logo-container"></div>
+          <div class="hidden sm:block border-l border-tala-border pl-3">
+            <span class="font-heading text-lg font-bold tracking-tight text-tala-dark block leading-none">Tala</span>
+            <span class="text-[11px] font-medium text-tala-primary tracking-wide">Tani Langsung</span>
+          </div>
+        </button>
+
+        <!-- Menu Navigasi Desktop -->
+        <nav id="desktop-nav" class="hidden lg:flex items-center gap-7 text-sm font-medium text-tala-dark"></nav>
+
+        <!-- Aksi Kanan -->
+        <div class="flex items-center gap-2 sm:gap-3">
+          <!-- Switch Dasbor -->
+          <div class="hidden md:flex items-center bg-[#F2F7EE] p-1 rounded-xl border border-tala-border text-xs">
+            <button id="btn-nav-consumer" onclick="navigateTo('consumer-dashboard')" class="px-2.5 py-1.5 rounded-lg font-medium transition-all">
+              Dampak Saya
+            </button>
+            <button id="btn-nav-farmer" onclick="navigateTo('farmer-dashboard')" class="px-2.5 py-1.5 rounded-lg font-medium transition-all">
+              Portal Petani
+            </button>
+          </div>
+
+          <!-- Tombol Notifikasi -->
+          <div class="relative">
+            <button onclick="toggleNotif()" aria-label="Notifikasi" class="p-2.5 rounded-xl text-tala-dark hover:bg-[#F2F7EE] transition-colors relative">
+              <i data-lucide="bell" class="w-5 h-5"></i>
+              <span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-tala-magenta"></span>
+            </button>
+            <div id="notif-dropdown" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-lg border border-tala-border p-4 z-50">
+              <div class="flex items-center justify-between pb-2 mb-2 border-b border-gray-100">
+                <span class="font-heading font-bold text-sm text-tala-dark">Notifikasi</span>
+                <span class="text-xs text-tala-magenta font-semibold">2 Baru</span>
+              </div>
+              <div class="space-y-2.5 text-xs">
+                <div onclick="navigateTo('tracking')" class="p-3 rounded-xl bg-tala-softGreen cursor-pointer hover:bg-[#e1eed7]">
+                  <p class="font-bold text-tala-primary">Pesanan Telah Tiba!</p>
+                  <p class="text-tala-dark/80 mt-0.5">Konfirmasi penerimaan TALA-20261119-01 agar dana segera diteruskan ke Kang Dedi.</p>
+                </div>
+                <div onclick="navigateTo('preorder')" class="p-3 rounded-xl bg-tala-softBlue cursor-pointer hover:bg-[#d8edf7]">
+                  <p class="font-bold text-tala-sky">Kuota Pre-Order Stroberi 82%</p>
+                  <p class="text-tala-dark/80 mt-0.5">Panen Ciwidey diperkirakan 5 Des 2026. Amankan kuota Anda.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tombol Keranjang -->
+          <button onclick="openCheckout()" aria-label="Keranjang Belanja" class="p-2.5 rounded-xl text-tala-dark hover:bg-[#F2F7EE] transition-colors relative">
+            <i data-lucide="shopping-basket" class="w-5 h-5"></i>
+            <span id="cart-badge" class="hidden absolute -top-0.5 -right-0.5 min-w-[20px] h-5 px-1 rounded-full bg-tala-magenta text-white text-[11px] font-bold flex items-center justify-center">0</span>
+          </button>
+
+          <!-- Tombol Masuk / Daftar -->
+          <button onclick="toggleAuthModal(true)" class="hidden sm:inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-tala-primary text-white text-sm font-semibold hover:bg-tala-primaryHover transition-colors">
+            <i data-lucide="user" class="w-4 h-4"></i>
+            <span>Masuk / Daftar</span>
+          </button>
+
+          <!-- Tombol Hamburger Mobile -->
+          <button onclick="toggleMobileMenu()" class="lg:hidden p-2.5 rounded-xl text-tala-dark hover:bg-[#F2F7EE]">
+            <i id="mobile-menu-icon" data-lucide="menu" class="w-6 h-6"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Menu Mobile -->
+    <div id="mobile-menu" class="hidden lg:hidden bg-white border-t border-tala-border px-4 pt-3 pb-6 space-y-1.5 shadow-md"></div>
+  </header>
+
+  <!-- ========================================================================
+       KONTEN UTAMA DINAMIS
+       ======================================================================== -->
+  <main id="app-content" class="flex-1"></main>
+
+  <!-- ========================================================================
+       FOOTER
+       ======================================================================== -->
+  <footer class="bg-tala-dark text-white mt-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 pb-10 border-b border-white/10">
+        <div class="space-y-3">
+          <div class="flex items-center gap-3">
+            <div id="footer-logo-container" class="bg-white p-1.5 rounded-xl inline-block"></div>
+            <div>
+              <span class="font-heading text-xl font-bold text-white block leading-none">Tala</span>
+              <span class="text-[11px] text-tala-lime">Tani Langsung</span>
+            </div>
+          </div>
+          <p class="text-xs text-gray-300 leading-relaxed">
+            Platform perdagangan hasil pertanian langsung dari petani ke konsumen tanpa perantara tengkulak. Membangun kedaulatan pangan yang adil dan transparan.
+          </p>
+        </div>
+
+        <div>
+          <h4 class="font-heading font-bold text-sm text-tala-lime mb-3">Jelajahi</h4>
+          <ul class="space-y-2 text-xs text-gray-300">
+            <li><button onclick="navigateTo('catalog')" class="hover:text-white">Katalog Panen Segar</button></li>
+            <li><button onclick="navigateTo('preorder')" class="hover:text-white">Pre-Order Pra-Panen</button></li>
+            <li><button onclick="navigateTo('tracking')" class="hover:text-white">Lacak Pesanan & Escrow</button></li>
+            <li><button onclick="navigateTo('education')" class="hover:text-white">Edukasi Pertanian Inovatif</button></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-heading font-bold text-sm text-[#38BDF8] mb-3">Ekosistem</h4>
+          <ul class="space-y-2 text-xs text-gray-300">
+            <li><button onclick="navigateTo('farmer-dashboard')" class="hover:text-white">Dashboard Mitra Petani</button></li>
+            <li><button onclick="navigateTo('consumer-dashboard')" class="hover:text-white">Dashboard Dampak Konsumen</button></li>
+            <li><button onclick="navigateTo('about')" class="hover:text-white">Tentang Kami & FAQ</button></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-heading font-bold text-sm text-[#F472B6] mb-3">Hubungi Kami</h4>
+          <ul class="space-y-2 text-xs text-gray-300">
+            <li class="flex items-center gap-2"><i data-lucide="map-pin" class="w-4 h-4 text-tala-lime"></i> Dramaga, Kab. Bogor, Jawa Barat</li>
+            <li class="flex items-center gap-2"><i data-lucide="phone" class="w-4 h-4 text-[#38BDF8]"></i> +62 812-8890-2026</li>
+            <li class="flex items-center gap-2"><i data-lucide="mail" class="w-4 h-4 text-tala-lime"></i> halo@tala.id</li>
+            <li class="flex items-center gap-2 pt-1"><i data-lucide="instagram" class="w-4 h-4 text-[#F472B6]"></i> @tala.tanilangsung</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="pt-6 flex flex-col sm:flex-row justify-between items-center gap-3 text-xs text-gray-400">
+        <p>© 2026 Tala (Tani Langsung) — Purwarupa Tugas Kuliah Pertanian Inovatif.</p>
+        <p>Dirancang untuk keadilan harga bagi petani Indonesia.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ========================================================================
+       WIDGET CHAT PETANI MENGAMBANG
+       ======================================================================== -->
+  <div id="chat-widget" class="fixed bottom-5 right-5 z-40"></div>
+
+  <!-- ========================================================================
+       TOAST NOTIFIKASI
+       ======================================================================== -->
+  <div id="toast-container" class="hidden fixed bottom-5 left-5 z-50 bg-tala-dark text-white px-4 py-3 rounded-xl shadow-lg text-xs font-medium flex items-center gap-2.5 border border-[#7CB518]/40">
+    <i data-lucide="check-circle-2" class="w-4 h-4 text-tala-lime shrink-0"></i>
+    <span id="toast-text"></span>
+  </div>
+
+  <!-- ========================================================================
+       MODAL MASUK / DAFTAR (SIMULASI PERAN)
+       ======================================================================== -->
+  <div id="auth-modal" class="hidden fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 border border-tala-border shadow-xl">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="font-heading text-xl font-bold text-tala-dark">Masuk ke Tala</h3>
+        <button onclick="toggleAuthModal(false)" class="p-1.5 rounded-lg hover:bg-gray-100">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <p class="text-xs text-tala-muted mb-4">
+        Pilih peran simulasi untuk menjelajahi fitur masing-masing pengguna:
+      </p>
+      <div class="grid grid-cols-2 gap-3 mb-5">
+        <button id="role-btn-konsumen" onclick="selectRole('konsumen')" class="p-3.5 rounded-xl border border-tala-primary bg-tala-softGreen text-left">
+          <i data-lucide="shopping-basket" class="w-5 h-5 text-tala-primary mb-1"></i>
+          <p class="font-bold text-xs text-tala-dark">Sebagai Konsumen</p>
+          <p class="text-[11px] text-tala-muted">Belanja & lihat dampak sosial</p>
+        </button>
+        <button id="role-btn-petani" onclick="selectRole('petani')" class="p-3.5 rounded-xl border border-tala-border text-left">
+          <i data-lucide="sprout" class="w-5 h-5 text-tala-sky mb-1"></i>
+          <p class="font-bold text-xs text-tala-dark">Sebagai Petani</p>
+          <p class="text-[11px] text-tala-muted">Kelola panen & kalkulator HPP</p>
+        </button>
+      </div>
+      <button onclick="confirmRoleLogin()" class="w-full py-3 rounded-xl bg-tala-primary text-white text-sm font-semibold hover:bg-tala-primaryHover">
+        Lanjutkan Masuk
+      </button>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       JAVASCRIPT LOGIC & STATE MANAGEMENT
+       ======================================================================== -->
+  <script>
+    // ------------------------------------------------------------------------
+    // 1. DATA DUMMY REALISTIS (JAWA BARAT)
+    // ------------------------------------------------------------------------
+    const FARMERS = [
+      {
+        id: 'f1',
+        name: 'Pak Hendra Sutisna',
+        farmName: 'Kebun Organik Cisarua',
+        location: 'Cisarua, Kab. Bogor',
+        landSize: '1,8 Hektar',
+        experience: '14 Tahun Bertani',
+        commodities: ['Sayuran Dataran Tinggi', 'Tomat', 'Cabai Merah'],
+        verified: true,
+        rating: 4.9,
+        totalOrders: 428,
+        avatar: 'https://images.unsplash.com/photo-1595273670150-bd0c3c392e46?auto=format&fit=crop&w=400&q=80',
+        cover: 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=1200&q=80',
+        story: 'Saya memulai pertanian organik sejak 2012 setelah melihat tanah di lereng Cisarua mulai jenuh pupuk kimia. Sebelumnya, harga tomat dan cabai kami sering ditekan tengkulak hingga Rp 4.000/kg saat panen raya. Melalui Tala, kami bisa menjual langsung ke keluarga di Jabodetabek dengan harga layak untuk menjaga kelestarian tanah.',
+        certifications: ['Organik Lokal Jawa Barat', 'Praktik Pertanian Baik (GAP)'],
+      },
+      {
+        id: 'f2',
+        name: 'Bu Siti Aminah',
+        farmName: 'Kelompok Tani Sari Bumi',
+        location: 'Ciwidey, Kab. Bandung',
+        landSize: '2,5 Hektar',
+        experience: '19 Tahun Bertani',
+        commodities: ['Stroberi', 'Bawang Merah', 'Kentang'],
+        verified: true,
+        rating: 4.8,
+        totalOrders: 612,
+        avatar: 'https://images.unsplash.com/photo-1589923188900-85dae523342b?auto=format&fit=crop&w=400&q=80',
+        cover: 'https://images.unsplash.com/photo-1464226184884-fa280b87c399?auto=format&fit=crop&w=1200&q=80',
+        story: 'Bersama 12 ibu tani di kaki Gunung Patuha, kami menanam hortikultura sejuk dengan irigasi mata air pegunungan. Hasil penjualan langsung membantu menyekolahkan anak-anak desa dan membeli alat pascapanen mandiri.',
+        certifications: ['Prima 3 Pertanian', 'Kelompok Tani Binaan'],
+      },
+      {
+        id: 'f3',
+        name: 'Kang Dedi Mulyana',
+        farmName: 'Sawah Lestari Cianjur',
+        location: 'Warungkondang, Kab. Cianjur',
+        landSize: '3,2 Hektar',
+        experience: '11 Tahun Bertani',
+        commodities: ['Beras Pandanwangi', 'Beras Merah Organik'],
+        verified: true,
+        rating: 5.0,
+        totalOrders: 890,
+        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80',
+        cover: 'https://images.unsplash.com/photo-1536657464919-892534f60d6e?auto=format&fit=crop&w=1200&q=80',
+        story: 'Melestarikan varietas padi asli Pandanwangi Cianjur tanpa pemutih dan tanpa pengawet. Padi digiling mendadak saat ada pesanan masuk agar aroma alami pandannya tetap terjaga sampai di penanak nasi Anda.',
+        certifications: ['Indikasi Geografis Pandanwangi', 'Bebas Residu Pestisida'],
+      },
+      {
+        id: 'f4',
+        name: 'Pak Ujang Rohman',
+        farmName: 'Kebun Agro Sukabumi',
+        location: 'Cikembar, Kab. Sukabumi',
+        landSize: '1,4 Hektar',
+        experience: '16 Tahun Bertani',
+        commodities: ['Pisang Raja Bulu', 'Jahe Merah', 'Kunyit'],
+        verified: true,
+        rating: 4.7,
+        totalOrders: 315,
+        avatar: 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=400&q=80',
+        cover: 'https://images.unsplash.com/photo-1523741543316-beb7fc7023d8?auto=format&fit=crop&w=1200&q=80',
+        story: 'Kami menerapkan sistem tumpang sari antara tanaman pisang dan rimpang empon-empon di bawah naungan pohon sengon. Metode ini menjaga kelembapan alami lahan sekaligus memberikan panen berkelanjutan sepanjang tahun.',
+        certifications: ['Tani Mandiri Sukabumi'],
+      },
+    ];
+
+    let PRODUCTS = [
+      {
+        id: 'p1',
+        name: 'Cabai Merah Keriting Segar',
+        category: 'Sayur',
+        type: 'Siap Panen',
+        isOrganic: true,
+        price: 38000,
+        marketPrice: 52000,
+        middlemanFarmGate: 19000,
+        unit: 'kg',
+        stock: 45,
+        location: 'Cisarua, Kab. Bogor',
+        farmerId: 'f1',
+        rating: 4.9,
+        reviewsCount: 84,
+        plantedDate: '12 Agu 2026',
+        harvestDate: '19 Nov 2026',
+        batchCode: 'TALA-BGR-2026-089',
+        image: 'https://images.unsplash.com/photo-1588252303782-cb80119abd6d?auto=format&fit=crop&w=800&q=80',
+        gallery: [
+          'https://images.unsplash.com/photo-1588252303782-cb80119abd6d?auto=format&fit=crop&w=800&q=80',
+          'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=800&q=80',
+        ],
+        description: 'Cabai merah keriting dipetik pagi hari saat embun belum menguap untuk menjaga tingkat kepedasan dan kerenyahan kulit. Ditanam menggunakan kompos kotoran ternak terfermentasi.',
+        breakdown: { farmer: 78, logistics: 11, packaging: 5, platform: 6 },
+        reviews: [
+          { id: 'r1', user: 'Rina Kusuma', date: '2 hari lalu', rating: 5, comment: 'Cabainya masih sangat segar dan tangkainya hijau! Pedasnya mantap untuk sambal.' },
+          { id: 'r2', user: 'Budi Santoso', date: '5 hari lalu', rating: 5, comment: 'Senang sekali tahu langsung uangnya masuk ke Pak Hendra. Kualitas jauh lebih bagus dari supermarket.' },
+        ],
+      },
+      {
+        id: 'p2',
+        name: 'Beras Pandanwangi Organik Giling Baru',
+        category: 'Beras & Biji',
+        type: 'Siap Panen',
+        isOrganic: true,
+        price: 78000,
+        marketPrice: 95000,
+        middlemanFarmGate: 44000,
+        unit: '5 kg',
+        stock: 60,
+        location: 'Warungkondang, Kab. Cianjur',
+        farmerId: 'f3',
+        rating: 5.0,
+        reviewsCount: 152,
+        plantedDate: '04 Jul 2026',
+        harvestDate: '15 Nov 2026',
+        batchCode: 'TALA-CJR-2026-114',
+        image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=800&q=80',
+        gallery: [
+          'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=800&q=80',
+          'https://images.unsplash.com/photo-1536657464919-892534f60d6e?auto=format&fit=crop&w=800&q=80',
+        ],
+        description: 'Beras Pandanwangi murni varietas lokal Cianjur. Pulen, harum alami daun pandan tanpa esens buatan, serta bebas bahan pemutih kimia.',
+        breakdown: { farmer: 80, logistics: 10, packaging: 4, platform: 6 },
+        reviews: [
+          { id: 'r3', user: 'Dewi Anggraini', date: '1 hari lalu', rating: 5, comment: 'Pas dibuka karungnya langsung tercium wangi pandan asli. Nasinya pulen banget!' },
+        ],
+      },
+      {
+        id: 'p3',
+        name: 'Tomat Beefsteak Dataran Tinggi (Bentuk Unik)',
+        category: 'Sayur',
+        type: 'Produk Kurang Sempurna',
+        isOrganic: false,
+        price: 11500,
+        marketPrice: 19000,
+        middlemanFarmGate: 4500,
+        unit: 'kg',
+        stock: 80,
+        location: 'Cisarua, Kab. Bogor',
+        farmerId: 'f1',
+        rating: 4.8,
+        reviewsCount: 41,
+        plantedDate: '25 Agu 2026',
+        harvestDate: '20 Nov 2026',
+        batchCode: 'TALA-BGR-2026-092',
+        image: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&w=800&q=80',
+        gallery: [
+          'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&w=800&q=80',
+        ],
+        description: 'Program Selamatkan Pangan Tani! Tomat berdaging tebal dan berair dengan bentuk sedikit asimetris atau ukuran beragam yang biasanya ditolak ritel modern. Rasa dan nutrisi 100% sama.',
+        breakdown: { farmer: 76, logistics: 13, packaging: 5, platform: 6 },
+        reviews: [
+          { id: 'r4', user: 'Sari Wulandari', date: '3 hari lalu', rating: 5, comment: 'Buat saus pasta dan jus tomat ini juara banget! Murah tapi kualitas kebun pegunungan.' },
+        ],
+      },
+      {
+        id: 'p4',
+        name: 'Pisang Raja Bulu Matang Pohon',
+        category: 'Buah',
+        type: 'Siap Panen',
+        isOrganic: true,
+        price: 24000,
+        marketPrice: 34000,
+        middlemanFarmGate: 11000,
+        unit: 'sisir (±1,5 kg)',
+        stock: 30,
+        location: 'Cikembar, Kab. Sukabumi',
+        farmerId: 'f4',
+        rating: 4.8,
+        reviewsCount: 63,
+        plantedDate: '10 Jan 2026',
+        harvestDate: '18 Nov 2026',
+        batchCode: 'TALA-SKB-2026-041',
+        image: 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?auto=format&fit=crop&w=800&q=80',
+        gallery: [
+          'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?auto=format&fit=crop&w=800&q=80',
+        ],
+        description: 'Pisang Raja Bulu tua pohon tanpa karbit. Manis legit alami, cocok dimakan langsung maupun diolah menjadi pisang goreng atau kolak.',
+        breakdown: { farmer: 77, logistics: 12, packaging: 5, platform: 6 },
+        reviews: [
+          { id: 'r5', user: 'Hadi Wijaya', date: '4 hari lalu', rating: 5, comment: 'Manisnya pas dan tidak cepat busuk karena matang alami di pohon.' },
+        ],
+      },
+      {
+        id: 'p5',
+        name: 'Jahe Merah Emprit Segar Panen',
+        category: 'Rempah',
+        type: 'Siap Panen',
+        isOrganic: true,
+        price: 29000,
+        marketPrice: 42000,
+        middlemanFarmGate: 14500,
+        unit: 'kg',
+        stock: 50,
+        location: 'Cikembar, Kab. Sukabumi',
+        farmerId: 'f4',
+        rating: 4.9,
+        reviewsCount: 37,
+        plantedDate: '14 Feb 2026',
+        harvestDate: '17 Nov 2026',
+        batchCode: 'TALA-SKB-2026-044',
+        image: 'https://images.unsplash.com/photo-1615485290382-441e4d049cb5?auto=format&fit=crop&w=800&q=80',
+        gallery: [
+          'https://images.unsplash.com/photo-1615485290382-441e4d049cb5?auto=format&fit=crop&w=800&q=80',
+        ],
+        description: 'Rimpang jahe merah berumur panen optimal 9 bulan sehingga kandungan minyak atsiri dan gingerol tinggi. Hangat dan aromatik.',
+        breakdown: { farmer: 79, logistics: 10, packaging: 5, platform: 6 },
+        reviews: [],
+      },
+      {
+        id: 'p6',
+        name: 'Kangkung Akar Hidroponik & Organik',
+        category: 'Sayur',
+        type: 'Siap Panen',
+        isOrganic: true,
+        price: 6500,
+        marketPrice: 10000,
+        middlemanFarmGate: 2500,
+        unit: 'ikat (300 gr)',
+        stock: 110,
+        location: 'Cisarua, Kab. Bogor',
+        farmerId: 'f1',
+        rating: 4.7,
+        reviewsCount: 29,
+        plantedDate: '28 Okt 2026',
+        harvestDate: '21 Nov 2026',
+        batchCode: 'TALA-BGR-2026-098',
+        image: 'https://images.unsplash.com/photo-1576045057995-568f588f82fb?auto=format&fit=crop&w=800&q=80',
+        gallery: [
+          'https://images.unsplash.com/photo-1576045057995-568f588f82fb?auto=format&fit=crop&w=800&q=80',
+        ],
+        description: 'Kangkung segar bebas pestisida sintetis, batang renyah dan daun hijau alami. Dipanen subuh di hari pengiriman.',
+        breakdown: { farmer: 75, logistics: 14, packaging: 5, platform: 6 },
+        reviews: [],
+      },
+    ];
+
+    const PREORDER_ITEMS = [
+      {
+        id: 'po1',
+        name: 'Stroberi Mencir Manis Ciwidey (Grade A)',
+        farmerId: 'f2',
+        location: 'Ciwidey, Kab. Bandung',
+        estimatedHarvest: '05 Desember 2026',
+        daysLeft: 14,
+        lockedPrice: 42000,
+        estimatedMarketPrice: 60000,
+        unit: 'pack (500 gr)',
+        targetQuota: 200,
+        bookedQuota: 164,
+        image: 'https://images.unsplash.com/photo-1464965911861-746a04b4bca6?auto=format&fit=crop&w=800&q=80',
+        description: 'Panen perdana musim penghujan akhir tahun. Dengan pre-order, petani mendapat kepastian pembeli sebelum buah dipetik.',
+        productRefId: 'p2',
+      },
+      {
+        id: 'po2',
+        name: 'Bawang Merah Brebes-Bandung Kering Asap',
+        farmerId: 'f2',
+        location: 'Ciwidey, Kab. Bandung',
+        estimatedHarvest: '12 Desember 2026',
+        daysLeft: 21,
+        lockedPrice: 34000,
+        estimatedMarketPrice: 48000,
+        unit: 'kg',
+        targetQuota: 500,
+        bookedQuota: 385,
+        image: 'https://images.unsplash.com/photo-1618512496248-a07fe83aa8cb?auto=format&fit=crop&w=800&q=80',
+        description: 'Kunci harga bawang merah lebih awal sebelum fluktuasi harga akhir tahun. Dikeringkan alami selama 5 hari pasca cabut.',
+        productRefId: 'p1',
+      },
+      {
+        id: 'po3',
+        name: 'Beras Merah Organik Pecah Kulit (Panen Raya)',
+        farmerId: 'f3',
+        location: 'Warungkondang, Kab. Cianjur',
+        estimatedHarvest: '18 Desember 2026',
+        daysLeft: 27,
+        lockedPrice: 72000,
+        estimatedMarketPrice: 92000,
+        unit: '5 kg',
+        targetQuota: 300,
+        bookedQuota: 210,
+        image: 'https://images.unsplash.com/photo-1536304993881-ff6e9eefa2a6?auto=format&fit=crop&w=800&q=80',
+        description: 'Kaya serat dan antosianin alami. Pemesanan awal membantu kelompok tani membiayai proses panen dan penggilingan.',
+        productRefId: 'p2',
+      },
+    ];
+
+    const ARTICLES = [
+      {
+        id: 'a1',
+        category: 'Budidaya Alami',
+        readTime: '5 menit baca',
+        date: '14 Nov 2026',
+        title: 'Membuat Pupuk Kompos Bokashi dari Limbah Pertanian Lokal',
+        excerpt: 'Panduan praktis bagi petani mengurangi ketergantungan pupuk kimia hingga 60% dengan memanfaatkan jerami dan kotoran ternak.',
+        image: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=800&q=80',
+        content: 'Ketergantungan pada pupuk kimia sering kali menggerus margin keuntungan petani kecil. Dengan memanfaatkan mikroorganisme lokal (MOL) dari bonggol pisang atau nasi basi, jerami padi dan dedaunan dapat difermentasi menjadi pupuk bokashi kaya hara dalam waktu 14 hari. Selain menekan biaya produksi hingga Rp 1,5 juta per musim tanam, struktur tanah menjadi lebih gembur dan mampu menahan air lebih baik.',
+      },
+      {
+        id: 'a2',
+        category: 'Pascapanen',
+        readTime: '4 menit baca',
+        date: '10 Nov 2026',
+        title: 'Teknik Pendinginan Sederhana (Zero Energy Cool Chamber) untuk Sayur',
+        excerpt: 'Cara menjaga kesegaran cabai, tomat, dan sayuran daun tanpa kulkas listrik mahal menggunakan bata merah dan pasir basah.',
+        image: 'https://images.unsplash.com/photo-1595855759920-86582396756a?auto=format&fit=crop&w=800&q=80',
+        content: 'Kehilangan hasil pascapanen (post-harvest loss) pada hortikultura di Indonesia mencapai 25–30%. Ruang pendingin evaporatif berbasis bata merah ganda yang diisi pasir lembap di sela-selanya mampu menurunkan suhu ruang hingga 8–10°C lebih rendah dari suhu luar serta menjaga kelembapan di atas 85%, memperpanjang umur simpan sayuran hingga 5 hari ekstra.',
+      },
+      {
+        id: 'a3',
+        category: 'Literasi Digital & Harga',
+        readTime: '6 menit baca',
+        date: '03 Nov 2026',
+        title: 'Menghitung Harga Pokok Produksi (HPP) Agar Petani Tidak Rugi',
+        excerpt: 'Mengapa petani sering lupa memasukkan upah tenaga kerja sendiri ke dalam modal tanam, dan cara memperbaikinya.',
+        image: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=800&q=80',
+        content: 'Banyak petani menganggap usaha taninya untung saat uang penjualan lebih besar dari biaya beli benih dan pupuk. Padahal, tenaga kerja petani dan keluarga selama 3 bulan merawat lahan juga merupakan biaya nyata. Dengan mencatat seluruh jam kerja dan biaya penyusutan alat, petani memiliki posisi tawar yang jelas saat menentukan harga jual adil.',
+      },
+    ];
+
+    const PICKUP_POINTS = [
+      { id: 'pp1', name: 'Titik Kumpul IPB Dramaga (Gerbang Utama)', area: 'Bogor Barat', fee: 5000 },
+      { id: 'pp2', name: 'Titik Kumpul Stasiun Bogor / Taman Topi', area: 'Bogor Tengah', fee: 7000 },
+      { id: 'pp3', name: 'Titik Kumpul Pasar Segar Depok', area: 'Depok', fee: 9000 },
+      { id: 'pp4', name: 'Titik Kumpul Gedung Sate / Gasibu', area: 'Bandung', fee: 8000 },
+    ];
+
+    // ------------------------------------------------------------------------
+    // 2. APPLICATION STATE
+    // ------------------------------------------------------------------------
+    const state = {
+      activePage: 'home',
+      selectedProductId: 'p1',
+      selectedFarmerId: 'f1',
+      selectedArticleId: null,
+      detailQty: 1,
+      detailActiveImg: null,
+      mobileMenuOpen: false,
+      notifOpen: false,
+      authModalOpen: false,
+      selectedRole: 'konsumen',
+      // Filter Katalog
+      searchQuery: '',
+      filterCategory: 'Semua',
+      filterLocation: 'Semua',
+      filterType: 'Semua',
+      maxPrice: 100000,
+      // Preorder
+      bookedPreorderIds: [],
+      // Keranjang & Checkout
+      cart: [
+        { productId: 'p1', qty: 2, isPreOrder: false },
+        { productId: 'p2', qty: 1, isPreOrder: false },
+      ],
+      deliveryMethod: 'courier',
+      selectedPickup: 'pp1',
+      paymentMethod: 'qris',
+      checkoutSuccess: false,
+      // Pesanan
+      orders: [
+        {
+          id: 'TALA-20261119-01',
+          date: '19 Nov 2026, 07:30 WIB',
+          items: [
+            { name: 'Beras Pandanwangi Organik Giling Baru', qty: 1, price: 78000, farmerShare: 62400 },
+            { name: 'Tomat Beefsteak Dataran Tinggi', qty: 2, price: 11500, farmerShare: 17480 },
+          ],
+          total: 116000,
+          farmerReceived: 79880,
+          statusStep: 3,
+          farmerName: 'Kang Dedi Mulyana & Pak Hendra',
+          escrowReleased: false,
+        },
+        {
+          id: 'TALA-20261112-08',
+          date: '12 Nov 2026, 09:15 WIB',
+          items: [
+            { name: 'Cabai Merah Keriting Segar', qty: 1, price: 38000, farmerShare: 29640 },
+            { name: 'Pisang Raja Bulu Matang Pohon', qty: 2, price: 24000, farmerShare: 36960 },
+          ],
+          total: 101000,
+          farmerReceived: 66600,
+          statusStep: 4,
+          farmerName: 'Pak Hendra Sutisna',
+          escrowReleased: true,
+        },
+      ],
+      // Kalkulator Petani
+      calcSeed: 1200000,
+      calcFertilizer: 1800000,
+      calcLabor: 3500000,
+      calcTransport: 600000,
+      calcYieldKg: 400,
+      // Chat
+      chatOpen: false,
+      chatFarmer: FARMERS[0],
+      chatMessages: [
+        { sender: 'farmer', text: 'Wilujeng enjing! Ada yang bisa saya bantu terkait hasil panen kebun kami?', time: '08:15' },
+      ],
+      // About Complaint
+      complaintSent: false,
+    };
+
+    // ------------------------------------------------------------------------
+    // 3. HELPER FUNCTIONS
+    // ------------------------------------------------------------------------
+    function formatRupiah(num) {
+      return new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      }).format(num);
+    }
+
+    function getLogoHTML(heightClass = 'h-12') {
+      return `
+        <img
+          src="IMG_1364.PNG"
+          alt="Logo Tala - Tani Langsung"
+          class="${heightClass} w-auto object-contain select-none"
+          onerror="this.outerHTML = \`
+            <svg viewBox='0 0 260 115' class='${heightClass} w-auto' fill='none' xmlns='http://www.w3.org/2000/svg' aria-label='Logo Tala'>
+              <ellipse cx='130' cy='68' rx='115' ry='40' fill='#E0F7FA' />
+              <circle cx='52' cy='45' r='22' fill='#38BDF8' opacity='0.85' />
+              <circle cx='78' cy='48' r='14' fill='#E8389B' opacity='0.85' />
+              <circle cx='96' cy='42' r='15' fill='#FB923C' opacity='0.85' />
+              <circle cx='176' cy='42' r='16' fill='#FDBA74' />
+              <path d='M148 34 L176 12 L204 34 Z' fill='#B45309' stroke='#1E1B4B' stroke-width='2.5' />
+              <path d='M167 44 Q176 51 185 44' stroke='#7C2D12' stroke-width='2.5' stroke-linecap='round' />
+              <path d='M22 72 Q45 52 72 74 Q45 88 22 72 Z' fill='#65A30D' stroke='#1E1B4B' stroke-width='2' />
+              <path d='M192 84 Q220 68 242 84 Q218 98 192 84 Z' fill='#65A30D' stroke='#1E1B4B' stroke-width='2' />
+              <text x='126' y='88' text-anchor='middle' font-family='DM Sans, sans-serif' font-weight='900' font-style='italic' font-size='54' stroke='#0284C7' stroke-width='9' stroke-linejoin='round'>Tala</text>
+              <text x='126' y='88' text-anchor='middle' font-family='DM Sans, sans-serif' font-weight='900' font-style='italic' font-size='54' stroke='#D9268A' stroke-width='5' stroke-linejoin='round'>Tala</text>
+              <text x='126' y='88' text-anchor='middle' font-family='DM Sans, sans-serif' font-weight='900' font-style='italic' font-size='54' fill='#A3E635'>Tala</text>
+            </svg>
+          \`"
+        />
+      `;
+    }
+
+    let toastTimeout = null;
+    function showToast(msg) {
+      const container = document.getElementById('toast-container');
+      const textEl = document.getElementById('toast-text');
+      textEl.textContent = msg;
+      container.classList.remove('hidden');
+      if (toastTimeout) clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        container.classList.add('hidden');
+      }, 3500);
+    }
+
+    // ------------------------------------------------------------------------
+    // 4. NAVIGATION & GLOBAL INTERACTIONS
+    // ------------------------------------------------------------------------
+    function navigateTo(page, paramId = null) {
+      state.activePage = page;
+      if (page === 'product-detail' && paramId) {
+        state.selectedProductId = paramId;
+        const prod = PRODUCTS.find((p) => p.id === paramId) || PRODUCTS[0];
+        state.detailActiveImg = prod.image;
+        state.detailQty = 1;
+      }
+      if (page === 'farmer-profile' && paramId) {
+        state.selectedFarmerId = paramId;
+      }
+      state.mobileMenuOpen = false;
+      state.notifOpen = false;
+      document.getElementById('mobile-menu').classList.add('hidden');
+      document.getElementById('notif-dropdown').classList.add('hidden');
+      renderApp();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function toggleMobileMenu() {
+      state.mobileMenuOpen = !state.mobileMenuOpen;
+      const menuEl = document.getElementById('mobile-menu');
+      if (state.mobileMenuOpen) {
+        menuEl.classList.remove('hidden');
+      } else {
+        menuEl.classList.add('hidden');
+      }
+    }
+
+    function toggleNotif() {
+      state.notifOpen = !state.notifOpen;
+      const notifEl = document.getElementById('notif-dropdown');
+      if (state.notifOpen) {
+        notifEl.classList.remove('hidden');
+      } else {
+        notifEl.classList.add('hidden');
+      }
+    }
+
+    function toggleAuthModal(open) {
+      state.authModalOpen = open;
+      const modal = document.getElementById('auth-modal');
+      if (open) {
+        modal.classList.remove('hidden');
+      } else {
+        modal.classList.add('hidden');
+      }
+      lucide.createIcons();
+    }
+
+    function selectRole(role) {
+      state.selectedRole = role;
+      const btnKonsumen = document.getElementById('role-btn-konsumen');
+      const btnPetani = document.getElementById('role-btn-petani');
+      if (role === 'konsumen') {
+        btnKonsumen.className = 'p-3.5 rounded-xl border border-tala-primary bg-tala-softGreen text-left';
+        btnPetani.className = 'p-3.5 rounded-xl border border-tala-border text-left';
+      } else {
+        btnKonsumen.className = 'p-3.5 rounded-xl border border-tala-border text-left';
+        btnPetani.className = 'p-3.5 rounded-xl border border-tala-sky bg-tala-softBlue text-left';
+      }
+    }
+
+    function confirmRoleLogin() {
+      toggleAuthModal(false);
+      if (state.selectedRole === 'petani') {
+        navigateTo('farmer-dashboard');
+        showToast('Masuk ke simulasi Portal Mitra Petani Tala.');
+      } else {
+        navigateTo('consumer-dashboard');
+        showToast('Masuk ke simulasi Akun Konsumen Tala.');
+      }
+    }
+
+    function openCheckout() {
+      state.checkoutSuccess = false;
+      navigateTo('checkout');
+    }
+
+    // ------------------------------------------------------------------------
+    // 5. CART & ORDER ACTIONS
+    // ------------------------------------------------------------------------
+    function addToCart(productId, qty = 1, isPreOrder = false) {
+      const idx = state.cart.findIndex((i) => i.productId === productId && i.isPreOrder === isPreOrder);
+      if (idx > -1) {
+        state.cart[idx].qty += qty;
+      } else {
+        state.cart.push({ productId, qty, isPreOrder });
+      }
+      const prod = PRODUCTS.find((p) => p.id === productId);
+      updateHeaderUI();
+      showToast(`"${prod ? prod.name : 'Produk'}" ditambahkan ke keranjang!`);
+      if (state.activePage === 'checkout') renderApp();
+    }
+
+    function updateCartQty(index, delta) {
+      const newQty = state.cart[index].qty + delta;
+      if (newQty <= 0) {
+        state.cart.splice(index, 1);
+      } else {
+        state.cart[index].qty = newQty;
+      }
+      renderApp();
+    }
+
+    function removeFromCart(index) {
+      state.cart.splice(index, 1);
+      showToast('Item dihapus dari keranjang.');
+      renderApp();
+    }
+
+    function getCartSummary() {
+      let subtotal = 0;
+      let totalFarmerShare = 0;
+      let totalTraditionalEquivalent = 0;
+
+      state.cart.forEach((item) => {
+        const prod = PRODUCTS.find((p) => p.id === item.productId);
+        if (prod) {
+          const lineTotal = prod.price * item.qty;
+          subtotal += lineTotal;
+          totalFarmerShare += Math.round(lineTotal * (prod.breakdown.farmer / 100));
+          totalTraditionalEquivalent += prod.marketPrice * item.qty;
+        }
+      });
+
+      const shippingFee =
+        subtotal === 0
+          ? 0
+          : state.deliveryMethod === 'courier'
+          ? 15000
+          : (PICKUP_POINTS.find((p) => p.id === state.selectedPickup)?.fee || 5000);
+
+      const grandTotal = subtotal + shippingFee;
+      const consumerSavings = Math.max(0, totalTraditionalEquivalent - subtotal);
+
+      return { subtotal, shippingFee, grandTotal, totalFarmerShare, consumerSavings };
+    }
+
+    function handlePlaceOrder() {
+      if (state.cart.length === 0) return;
+      const summary = getCartSummary();
+      const newOrder = {
+        id: `TALA-20261121-${Math.floor(10 + Math.random() * 89)}`,
+        date: '21 Nov 2026, Baru saja',
+        items: state.cart.map((c) => {
+          const p = PRODUCTS.find((item) => item.id === c.productId);
+          return {
+            name: p.name,
+            qty: c.qty,
+            price: p.price,
+            farmerShare: Math.round(p.price * c.qty * (p.breakdown.farmer / 100)),
+          };
+        }),
+        total: summary.grandTotal,
+        farmerReceived: summary.totalFarmerShare,
+        statusStep: 0,
+        farmerName: 'Petani Mitra Tala',
+        escrowReleased: false,
+      };
+      state.orders.unshift(newOrder);
+      state.cart = [];
+      state.checkoutSuccess = true;
+      showToast('Pesanan berhasil dibuat! Dana aman di rekening bersama.');
+      renderApp();
+    }
+
+    function handleConfirmReceived(orderId) {
+      state.orders = state.orders.map((ord) =>
+        ord.id === orderId ? { ...ord, statusStep: 4, escrowReleased: true } : ord
+      );
+      showToast('Pesanan dikonfirmasi! Dana rekening bersama langsung diteruskan ke petani.');
+      renderApp();
+    }
+
+    // ------------------------------------------------------------------------
+    // 6. CHAT WIDGET RENDER & ACTIONS
+    // ------------------------------------------------------------------------
+    function openChatWithFarmer(farmerId) {
+      const farmer = FARMERS.find((f) => f.id === farmerId) || FARMERS[0];
+      state.chatFarmer = farmer;
+      state.chatOpen = true;
+      renderChatWidget();
+    }
+
+    function toggleChat(open) {
+      state.chatOpen = open;
+      renderChatWidget();
+    }
+
+    function handleSendChat(e) {
+      e.preventDefault();
+      const input = document.getElementById('chat-input-field');
+      if (!input || !input.value.trim()) return;
+      const msgText = input.value.trim();
+      state.chatMessages.push({ sender: 'user', text: msgText, time: 'Sekarang' });
+      renderChatWidget();
+      setTimeout(() => {
+        state.chatMessages.push({
+          sender: 'farmer',
+          text: `Terima kasih atas pesannya! Hasil panen di ${state.chatFarmer.farmName} siap dipetik besok subuh untuk dikirim langsung.`,
+          time: 'Sekarang',
+        });
+        renderChatWidget();
+      }, 800);
+    }
+
+    function renderChatWidget() {
+      const container = document.getElementById('chat-widget');
+      if (!state.chatOpen) {
+        container.innerHTML = `
+          <button onclick="toggleChat(true)" class="flex items-center gap-2 px-4 py-3 rounded-full bg-tala-primary text-white text-xs font-semibold shadow-md hover:bg-tala-primaryHover transition-all">
+            <i data-lucide="message-square" class="w-4 h-4 text-[#BEF264]"></i>
+            <span>Chat Petani</span>
+          </button>
+        `;
+      } else {
+        container.innerHTML = `
+          <div class="w-80 sm:w-96 bg-white rounded-2xl shadow-xl border border-tala-border overflow-hidden">
+            <div class="bg-tala-primary text-white p-3.5 flex items-center justify-between">
+              <div class="flex items-center gap-2.5">
+                <img src="${state.chatFarmer.avatar}" alt="${state.chatFarmer.name}" class="w-8 h-8 rounded-full object-cover border border-white/50" />
+                <div>
+                  <p class="text-xs font-bold">${state.chatFarmer.name}</p>
+                  <p class="text-[10px] text-white/85">Online • ${state.chatFarmer.farmName}</p>
+                </div>
+              </div>
+              <button onclick="toggleChat(false)" class="p-1 hover:bg-white/10 rounded-lg">
+                <i data-lucide="x" class="w-4 h-4"></i>
+              </button>
+            </div>
+            <div id="chat-messages-box" class="p-3.5 h-60 overflow-y-auto space-y-2.5 bg-tala-bg text-xs">
+              ${state.chatMessages
+                .map(
+                  (m) => `
+                <div class="flex flex-col max-w-[82%] p-2.5 rounded-xl ${
+                  m.sender === 'user'
+                    ? 'ml-auto bg-tala-primary text-white'
+                    : 'bg-white border border-tala-border text-tala-dark'
+                }">
+                  <span>${m.text}</span>
+                  <span class="text-[9px] mt-1 self-end ${m.sender === 'user' ? 'text-white/70' : 'text-gray-400'}">${m.time}</span>
+                </div>
+              `
+                )
+                .join('')}
+            </div>
+            <form onsubmit="handleSendChat(event)" class="p-2.5 bg-white border-t border-gray-100 flex gap-2">
+              <input id="chat-input-field" type="text" placeholder="Tanya jadwal petik atau stok..." class="flex-1 text-xs px-3 py-2 rounded-xl bg-tala-bg focus:outline-none" />
+              <button type="submit" class="p-2 rounded-xl bg-tala-primary text-white hover:bg-tala-primaryHover">
+                <i data-lucide="send" class="w-4 h-4"></i>
+              </button>
+            </form>
+          </div>
+        `;
+        const msgBox = document.getElementById('chat-messages-box');
+        if (msgBox) msgBox.scrollTop = msgBox.scrollHeight;
+      }
+      lucide.createIcons();
+    }
+
+    // ------------------------------------------------------------------------
+    // 7. REUSABLE COMPONENT: PRODUCT CARD HTML
+    // ------------------------------------------------------------------------
+    function renderProductCard(product) {
+      const farmer = FARMERS.find((f) => f.id === product.farmerId);
+      const savingPercent = Math.round(((product.marketPrice - product.price) / product.marketPrice) * 100);
+
+      return `
+        <div class="bg-white rounded-2xl border border-tala-border overflow-hidden hover:border-[#7CB518] transition-colors duration-200 flex flex-col justify-between group">
+          <div>
+            <div onclick="navigateTo('product-detail', '${product.id}')" class="relative h-48 overflow-hidden cursor-pointer bg-[#F2F7EE]">
+              <img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-300" />
+              <div class="absolute top-3 left-3 flex flex-wrap gap-1.5">
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-tala-primary text-white text-xs font-semibold">
+                  <i data-lucide="shield-check" class="w-3.5 h-3.5 text-[#BEF264]"></i>
+                  ${product.breakdown.farmer}% Untuk Petani
+                </span>
+                ${
+                  product.type === 'Produk Kurang Sempurna'
+                    ? `<span class="px-2.5 py-1 rounded-lg bg-tala-magenta text-white text-xs font-semibold">Selamatkan Pangan</span>`
+                    : ''
+                }
+              </div>
+              ${
+                product.isOrganic
+                  ? `<span class="absolute bottom-3 left-3 inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white/95 text-tala-primary text-xs font-semibold border border-tala-border">
+                      <i data-lucide="leaf" class="w-3 h-3"></i> Organik
+                    </span>`
+                  : ''
+              }
+            </div>
+
+            <div class="p-4">
+              <div class="flex items-center justify-between text-xs text-tala-muted mb-1.5">
+                <span class="inline-flex items-center gap-1">
+                  <i data-lucide="map-pin" class="w-3.5 h-3.5 text-tala-sky"></i>
+                  ${product.location}
+                </span>
+                <span class="inline-flex items-center gap-1 font-semibold text-tala-dark">
+                  <i data-lucide="star" class="w-3.5 h-3.5 fill-[#F59E0B] text-[#F59E0B]"></i>
+                  ${product.rating}
+                </span>
+              </div>
+
+              <h3 onclick="navigateTo('product-detail', '${product.id}')" class="font-heading font-bold text-base text-tala-dark hover:text-tala-primary cursor-pointer line-clamp-2 leading-snug">
+                ${product.name}
+              </h3>
+
+              ${
+                farmer
+                  ? `<button onclick="navigateTo('farmer-profile', '${farmer.id}')" class="mt-2 inline-flex items-center gap-1.5 text-xs text-tala-muted hover:text-tala-primary transition-colors">
+                      <img src="${farmer.avatar}" alt="${farmer.name}" class="w-5 h-5 rounded-full object-cover" />
+                      <span>${farmer.name}</span>
+                      <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-tala-sky"></i>
+                    </button>`
+                  : ''
+              }
+            </div>
+          </div>
+
+          <div class="px-4 pb-4 pt-2 border-t border-[#F2F7EE]">
+            <div class="flex items-baseline justify-between mb-3">
+              <div>
+                <span class="text-xs text-gray-400 line-through block">Pasar: ${formatRupiah(product.marketPrice)}</span>
+                <span class="font-heading text-lg font-bold text-tala-primary">${formatRupiah(product.price)}</span>
+                <span class="text-xs text-tala-muted"> / ${product.unit}</span>
+              </div>
+              <span class="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-tala-softBlue text-tala-sky">
+                Hemat ${savingPercent}%
+              </span>
+            </div>
+
+            <div class="flex gap-2">
+              <button onclick="navigateTo('product-detail', '${product.id}')" class="flex-1 py-2 px-3 rounded-xl border border-tala-border text-tala-dark text-xs font-semibold hover:bg-[#F2F7EE] transition-colors">
+                Lihat Jejak
+              </button>
+              <button onclick="addToCart('${product.id}', 1, false)" class="flex-1 py-2 px-3 rounded-xl bg-tala-primary text-white text-xs font-semibold hover:bg-tala-primaryHover transition-colors inline-flex items-center justify-center gap-1.5">
+                <i data-lucide="shopping-basket" class="w-3.5 h-3.5"></i>
+                Keranjang
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // ------------------------------------------------------------------------
+    // 8. PAGE RENDERERS
+    // ------------------------------------------------------------------------
+
+    // HALAMAN 1: BERANDA
+    function renderHomePage() {
+      return `
+        <div>
+          <!-- HERO SECTION -->
+          <section class="relative bg-tala-bg pt-8 pb-16 lg:pt-12 lg:pb-20 border-b border-tala-border">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div class="grid lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+                <div class="lg:col-span-7 space-y-6">
+                  <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-tala-softBlue border border-[#BAE6FD] text-tala-sky text-xs sm:text-sm font-semibold">
+                    <i data-lucide="leaf" class="w-4 h-4 text-tala-primary"></i>
+                    <span>Tala (Tani Langsung) • Tanpa Perantara Tengkulak</span>
+                  </div>
+
+                  <h1 class="font-heading text-3xl sm:text-5xl lg:text-[52px] font-bold text-tala-dark leading-[1.14] tracking-tight">
+                    Dari Kebun Langsung ke Meja Anda
+                  </h1>
+
+                  <p class="text-base sm:text-lg text-tala-muted max-w-2xl leading-relaxed">
+                    Belanja hasil panen segar langsung dari petani Jawa Barat. Petani menerima hingga
+                    <strong class="text-tala-primary">80% dari harga jual</strong>, dan Anda memperoleh bahan pangan segar dengan harga yang jujur.
+                  </p>
+
+                  <!-- Kolom Pencarian Cepat -->
+                  <form onsubmit="event.preventDefault(); state.searchQuery = document.getElementById('hero-search').value; navigateTo('catalog');" class="flex flex-col sm:flex-row gap-2 max-w-xl bg-white p-2 rounded-2xl border border-tala-border">
+                    <div class="flex items-center flex-1 px-3 gap-2.5">
+                      <i data-lucide="search" class="w-5 h-5 text-tala-primary"></i>
+                      <input id="hero-search" type="text" value="${state.searchQuery}" placeholder="Cari cabai merah, beras organik, tomat, pisang..." class="w-full py-2 text-sm text-tala-dark placeholder-gray-400 focus:outline-none bg-transparent" />
+                    </div>
+                    <button type="submit" class="px-6 py-3 rounded-xl bg-tala-primary text-white text-sm font-semibold hover:bg-tala-primaryHover transition-colors">
+                      Cari Panen
+                    </button>
+                  </form>
+
+                  <!-- CTA Utama & Sekunder -->
+                  <div class="flex flex-wrap items-center gap-3.5 pt-1">
+                    <button onclick="navigateTo('catalog')" class="px-6 py-3.5 rounded-xl bg-tala-primary text-white font-semibold text-sm hover:bg-tala-primaryHover transition-colors inline-flex items-center gap-2">
+                      <span>Belanja Sekarang</span>
+                      <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </button>
+                    <button onclick="navigateTo('farmer-dashboard')" class="px-6 py-3.5 rounded-xl bg-tala-sky text-white font-semibold text-sm hover:bg-tala-skyHover transition-colors inline-flex items-center gap-2">
+                      <i data-lucide="sprout" class="w-4 h-4"></i>
+                      <span>Gabung Sebagai Petani</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Gambar Hero -->
+                <div class="lg:col-span-5">
+                  <div class="relative rounded-2xl overflow-hidden border border-tala-border bg-white">
+                    <img src="https://images.unsplash.com/photo-1595855759920-86582396756a?auto=format&fit=crop&w=1000&q=80" alt="Petani memanen sayuran segar" class="w-full h-[350px] sm:h-[420px] object-cover" />
+                    <div class="p-4 bg-white border-t border-tala-border flex items-center justify-between gap-3">
+                      <div>
+                        <p class="text-xs font-semibold text-tala-sky">Panen Hari Ini • Cisarua, Bogor</p>
+                        <p class="font-heading font-bold text-sm text-tala-dark">Kebun Organik Pak Hendra Sutisna</p>
+                      </div>
+                      <span class="px-3 py-1.5 rounded-lg bg-tala-softGreen text-tala-primary text-xs font-bold shrink-0">
+                        78% Untuk Petani
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- CARA KERJA -->
+          <section class="py-16 bg-white border-b border-tala-border">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div class="max-w-2xl mb-10">
+                <span class="text-xs font-bold uppercase tracking-wider text-tala-sky">Alur Rantai Pasok Pendek</span>
+                <h2 class="font-heading text-2xl sm:text-3xl font-bold text-tala-dark mt-1">Cara Kerja Tala</h2>
+                <p class="text-sm sm:text-base text-tala-muted mt-2">
+                  Memangkas lapisan perantara menjadi jalur distribusi langsung yang terbuka bagi petani dan konsumen.
+                </p>
+              </div>
+
+              <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                ${[
+                  { step: '01', icon: 'sprout', accent: 'bg-tala-softGreen text-tala-primary', title: 'Petani Unggah Panen', desc: 'Petani mencantumkan komoditas siap panen atau jadwal panen mendatang beserta harga layak sesuai biaya produksi.' },
+                  { step: '02', icon: 'shopping-basket', accent: 'bg-tala-softBlue text-tala-sky', title: 'Konsumen Memesan', desc: 'Anda memilih hasil bumi segar, melihat rincian pembagian uang, dan membayar aman melalui rekening bersama.' },
+                  { step: '03', icon: 'truck', accent: 'bg-[#FCE7F3] text-tala-magenta', title: 'Panen & Kirim Langsung', desc: 'Komoditas dipanen subuh sesuai pesanan lalu diantar via kurir mitra atau titik kumpul terdekat.' },
+                  { step: '04', icon: 'heart-handshake', accent: 'bg-tala-softGreen text-tala-primary', title: 'Dana Penuh ke Petani', desc: 'Setelah pesanan Anda terima dengan baik, dana langsung diteruskan ke rekening petani tanpa potongan tersembunyi.' },
+                ]
+                  .map(
+                    (item) => `
+                  <div class="p-6 rounded-2xl bg-tala-bg border border-tala-border">
+                    <div class="flex items-center justify-between mb-4">
+                      <div class="w-11 h-11 rounded-xl ${item.accent} flex items-center justify-center">
+                        <i data-lucide="${item.icon}" class="w-5 h-5"></i>
+                      </div>
+                      <span class="text-xs font-bold text-tala-muted">Langkah ${item.step}</span>
+                    </div>
+                    <h3 class="font-heading font-bold text-base text-tala-dark mb-2">${item.title}</h3>
+                    <p class="text-sm text-tala-muted leading-relaxed">${item.desc}</p>
+                  </div>
+                `
+                  )
+                  .join('')}
+              </div>
+            </div>
+          </section>
+
+          <!-- KENAPA HARGA KAMI ADIL -->
+          <section class="py-16 bg-[#F2F7EE] border-b border-tala-border">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div class="max-w-2xl mb-10">
+                <span class="text-xs font-bold uppercase tracking-wider text-tala-primary">Keadilan Ekonomi Pertanian</span>
+                <h2 class="font-heading text-2xl sm:text-3xl font-bold text-tala-dark mt-1">Kenapa Harga Kami Adil?</h2>
+                <p class="text-sm sm:text-base text-tala-muted mt-2">
+                  Perbandingan pembagian nilai pada 1 kg Cabai Merah Keriting antara jalur tengkulak dan jalur langsung Tala.
+                </p>
+              </div>
+
+              <div class="grid md:grid-cols-2 gap-8">
+                <!-- Jalur Konvensional -->
+                <div class="bg-white rounded-2xl p-6 sm:p-8 border border-tala-border">
+                  <div class="flex items-center justify-between mb-4">
+                    <span class="px-3 py-1 rounded-lg bg-[#FCE7F3] text-tala-magenta text-xs font-bold">Rantai Konvensional (Tengkulak)</span>
+                    <span class="text-xs font-bold text-tala-muted">5 Perantara</span>
+                  </div>
+                  <h3 class="font-heading font-bold text-xl text-tala-dark mb-4">Konsumen Bayar Rp 52.000 / kg</h3>
+                  <div class="space-y-2.5 text-sm mb-5">
+                    <div class="flex justify-between items-center p-3 rounded-xl bg-[#FDF2F8] border border-[#FBCFE8]">
+                      <span class="font-medium text-tala-dark">Diterima Petani (Harga Kebun)</span>
+                      <span class="font-bold text-tala-magenta">Rp 19.000 (36%)</span>
+                    </div>
+                    <div class="flex justify-between items-center p-3 rounded-xl bg-tala-bg">
+                      <span class="text-tala-muted">Tengkulak Desa & Pengepul Kecamatan</span>
+                      <span class="font-semibold text-tala-dark">Rp 12.000 (23%)</span>
+                    </div>
+                    <div class="flex justify-between items-center p-3 rounded-xl bg-tala-bg">
+                      <span class="text-tala-muted">Bandar Pasar Induk & Pedagang Eceran</span>
+                      <span class="font-semibold text-tala-dark">Rp 15.000 (29%)</span>
+                    </div>
+                    <div class="flex justify-between items-center p-3 rounded-xl bg-tala-bg">
+                      <span class="text-tala-muted">Susut / Rusak di Perjalanan Panjang</span>
+                      <span class="font-semibold text-tala-dark">Rp 6.000 (12%)</span>
+                    </div>
+                  </div>
+                  <p class="text-xs text-tala-muted">*Petani menanggung risiko gagal panen sendirian, namun margin terbesar dinikmati perantara.</p>
+                </div>
+
+                <!-- Jalur Tala -->
+                <div class="bg-white rounded-2xl p-6 sm:p-8 border-2 border-tala-primary">
+                  <div class="flex items-center justify-between mb-4">
+                    <span class="px-3 py-1 rounded-lg bg-tala-primary text-white text-xs font-bold">Jalur Tala (Tani Langsung)</span>
+                    <span class="text-xs font-bold text-tala-primary">Langsung dari Kebun</span>
+                  </div>
+                  <h3 class="font-heading font-bold text-xl text-tala-dark mb-4">Konsumen Bayar Rp 38.000 / kg</h3>
+                  <div class="space-y-2.5 text-sm mb-5">
+                    <div class="flex justify-between items-center p-3 rounded-xl bg-tala-softGreen border border-[#B7D6A3]">
+                      <span class="font-bold text-tala-primary">Diterima Langsung Petani</span>
+                      <span class="font-bold text-tala-primary">Rp 29.640 (78%)</span>
+                    </div>
+                    <div class="flex justify-between items-center p-3 rounded-xl bg-tala-bg">
+                      <span class="text-tala-muted">Logistik Rantai Dingin / Kurir Lokal</span>
+                      <span class="font-semibold text-tala-dark">Rp 4.180 (11%)</span>
+                    </div>
+                    <div class="flex justify-between items-center p-3 rounded-xl bg-tala-bg">
+                      <span class="text-tala-muted">Kemasan Ramah Lingkungan</span>
+                      <span class="font-semibold text-tala-dark">Rp 1.900 (5%)</span>
+                    </div>
+                    <div class="flex justify-between items-center p-3 rounded-xl bg-tala-bg">
+                      <span class="text-tala-muted">Operasional Platform Tala</span>
+                      <span class="font-semibold text-tala-dark">Rp 2.280 (6%)</span>
+                    </div>
+                  </div>
+                  <div class="p-3 rounded-xl bg-tala-softBlue text-xs font-bold text-tala-sky flex items-center justify-between">
+                    <span>Pendapatan Petani +56% Lebih Tinggi</span>
+                    <span>Konsumen Hemat Rp 14.000/kg</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- PANEN MINGGU INI -->
+          <section class="py-16 bg-tala-bg">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
+                <div>
+                  <span class="text-xs font-bold uppercase tracking-wider text-tala-sky">Segar Dipetik Pagi Ini</span>
+                  <h2 class="font-heading text-2xl sm:text-3xl font-bold text-tala-dark mt-1">Panen Minggu Ini</h2>
+                </div>
+                <button onclick="navigateTo('catalog')" class="inline-flex items-center gap-1.5 text-sm font-semibold text-tala-primary hover:underline">
+                  <span>Lihat Semua Katalog</span>
+                  <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                </button>
+              </div>
+              <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                ${PRODUCTS.slice(0, 4).map(renderProductCard).join('')}
+              </div>
+            </div>
+          </section>
+
+          <!-- PETANI UNGGULAN -->
+          <section class="py-16 bg-white border-t border-tala-border">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
+                <div>
+                  <span class="text-xs font-bold uppercase tracking-wider text-tala-primary">Mitra Penggerak Pangan</span>
+                  <h2 class="font-heading text-2xl sm:text-3xl font-bold text-tala-dark mt-1">Kenali Petani Unggulan Tala</h2>
+                </div>
+                <p class="text-sm text-tala-muted max-w-md">
+                  Setiap lahan mitra diverifikasi langsung oleh tim lapangan untuk menjamin keaslian asal komoditas.
+                </p>
+              </div>
+
+              <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                ${FARMERS.map(
+                  (farmer) => `
+                  <div onclick="navigateTo('farmer-profile', '${farmer.id}')" class="bg-tala-bg rounded-2xl p-5 border border-tala-border hover:border-tala-primary transition-colors cursor-pointer group">
+                    <div class="flex items-center gap-3.5 mb-4">
+                      <img src="${farmer.avatar}" alt="${farmer.name}" class="w-14 h-14 rounded-2xl object-cover border border-tala-border" />
+                      <div>
+                        <div class="flex items-center gap-1">
+                          <h3 class="font-heading font-bold text-base text-tala-dark group-hover:text-tala-primary">${farmer.name}</h3>
+                          <i data-lucide="check-circle-2" class="w-4 h-4 text-tala-sky shrink-0"></i>
+                        </div>
+                        <p class="text-xs text-tala-primary font-semibold">${farmer.farmName}</p>
+                      </div>
+                    </div>
+                    <div class="space-y-1.5 text-xs text-tala-muted mb-4">
+                      <p class="flex items-center gap-1.5"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-tala-sky"></i> ${farmer.location}</p>
+                      <p class="flex items-center gap-1.5"><i data-lucide="leaf" class="w-3.5 h-3.5 text-tala-primary"></i> Lahan ${farmer.landSize} • ${farmer.experience}</p>
+                    </div>
+                    <div class="flex flex-wrap gap-1.5 pt-3 border-t border-tala-border">
+                      ${farmer.commodities
+                        .map((c) => `<span class="px-2.5 py-0.5 rounded-md bg-white text-tala-dark text-[11px] font-medium border border-tala-border">${c}</span>`)
+                        .join('')}
+                    </div>
+                  </div>
+                `
+                ).join('')}
+              </div>
+            </div>
+          </section>
+
+          <!-- BAGIAN DAMPAK KOLEKTIF -->
+          <section class="py-16 bg-tala-dark text-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div class="max-w-2xl mb-10">
+                <span class="text-xs font-bold uppercase tracking-wider text-tala-lime">Laporan Dampak Komunitas</span>
+                <h2 class="font-heading text-2xl sm:text-3xl font-bold mt-1">Dampak Nyata Ekosistem Tala</h2>
+                <p class="text-sm sm:text-base text-gray-300 mt-2">
+                  Setiap transaksi berkontribusi langsung pada kesejahteraan keluarga petani di pedesaan Jawa Barat.
+                </p>
+              </div>
+              <div class="grid sm:grid-cols-3 gap-6">
+                <div class="p-7 rounded-2xl bg-white/5 border border-white/10">
+                  <p class="text-3xl sm:text-4xl font-heading font-bold text-tala-lime">Rp 486,5 Juta</p>
+                  <p class="text-sm font-semibold mt-2 text-white">Total Tambahan Pendapatan Petani</p>
+                  <p class="text-xs text-gray-400 mt-1">Dibandingkan harga jual melalui tengkulak lokal</p>
+                </div>
+                <div class="p-7 rounded-2xl bg-white/5 border border-white/10">
+                  <p class="text-3xl sm:text-4xl font-heading font-bold text-[#38BDF8]">148 Petani</p>
+                  <p class="text-sm font-semibold mt-2 text-white">Petani & Kelompok Tani Bergabung</p>
+                  <p class="text-xs text-gray-400 mt-1">Tersebar di Bogor, Cianjur, Bandung, dan Sukabumi</p>
+                </div>
+                <div class="p-7 rounded-2xl bg-white/5 border border-white/10">
+                  <p class="text-3xl sm:text-4xl font-heading font-bold text-[#F472B6]">6.420+ Pesanan</p>
+                  <p class="text-sm font-semibold mt-2 text-white">Transaksi Pangan Adil Tersalurkan</p>
+                  <p class="text-xs text-gray-400 mt-1">99,2% tingkat kepuasan kesegaran produk</p>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      `;
+    }
+
+    // HALAMAN 2: KATALOG PRODUK
+    function renderCatalogPage() {
+      const categories = ['Semua', 'Sayur', 'Buah', 'Beras & Biji', 'Rempah'];
+      const locations = ['Semua', 'Bogor', 'Bandung', 'Cianjur', 'Sukabumi'];
+      const types = ['Semua', 'Siap Panen', 'Produk Kurang Sempurna'];
+
+      const filteredProducts = PRODUCTS.filter((item) => {
+        const matchSearch =
+          item.name.toLowerCase().includes(state.searchQuery.toLowerCase()) ||
+          item.location.toLowerCase().includes(state.searchQuery.toLowerCase());
+        const matchCat = state.filterCategory === 'Semua' || item.category === state.filterCategory;
+        const matchLoc = state.filterLocation === 'Semua' || item.location.toLowerCase().includes(state.filterLocation.toLowerCase());
+        const matchType = state.filterType === 'Semua' || item.type === state.filterType;
+        const matchPrice = item.price <= state.maxPrice;
+        return matchSearch && matchCat && matchLoc && matchType && matchPrice;
+      });
+
+      return `
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+          <div class="mb-8">
+            <h1 class="font-heading text-3xl sm:text-4xl font-bold text-tala-dark">Katalog Hasil Panen Langsung</h1>
+            <p class="text-sm sm:text-base text-tala-muted mt-1">
+              Semua harga dilengkapi rincian transparansi bagian petani dan tanggal petik terbaru.
+            </p>
+          </div>
+
+          <div class="grid lg:grid-cols-12 gap-8">
+            <!-- Sidebar Filter -->
+            <aside class="lg:col-span-3 space-y-6">
+              <div class="bg-white p-5 rounded-2xl border border-tala-border space-y-5">
+                <div class="flex items-center justify-between border-b border-gray-100 pb-3">
+                  <span class="font-heading font-bold text-base text-tala-dark flex items-center gap-2">
+                    <i data-lucide="filter" class="w-4 h-4 text-tala-primary"></i> Filter Panen
+                  </span>
+                  <button onclick="state.searchQuery=''; state.filterCategory='Semua'; state.filterLocation='Semua'; state.filterType='Semua'; state.maxPrice=100000; renderApp();" class="text-xs text-tala-magenta hover:underline font-semibold">
+                    Reset
+                  </button>
+                </div>
+
+                <div>
+                  <label class="text-xs font-bold text-tala-dark block mb-1.5">Kata Kunci</label>
+                  <div class="relative">
+                    <i data-lucide="search" class="w-4 h-4 text-gray-400 absolute left-3 top-2.5"></i>
+                    <input type="text" value="${state.searchQuery}" oninput="state.searchQuery = this.value; renderApp();" placeholder="Cari produk..." class="w-full pl-9 pr-3 py-2 text-xs rounded-xl border border-tala-border focus:outline-none focus:border-tala-primary" />
+                  </div>
+                </div>
+
+                <div>
+                  <label class="text-xs font-bold text-tala-dark block mb-2">Kategori Komoditas</label>
+                  <div class="flex flex-wrap gap-1.5">
+                    ${categories
+                      .map(
+                        (cat) => `
+                      <button onclick="state.filterCategory='${cat}'; renderApp();" class="px-3 py-1.5 rounded-xl text-xs font-medium transition-colors ${
+                        state.filterCategory === cat ? 'bg-tala-primary text-white' : 'bg-[#F2F7EE] text-tala-dark hover:bg-[#e1eed7]'
+                      }">
+                        ${cat}
+                      </button>
+                    `
+                      )
+                      .join('')}
+                  </div>
+                </div>
+
+                <div>
+                  <label class="text-xs font-bold text-tala-dark block mb-2">Wilayah Kebun / Sawah</label>
+                  <select onchange="state.filterLocation=this.value; renderApp();" class="w-full p-2.5 rounded-xl border border-tala-border text-xs bg-tala-bg text-tala-dark focus:outline-none">
+                    ${locations
+                      .map(
+                        (loc) => `
+                      <option value="${loc}" ${state.filterLocation === loc ? 'selected' : ''}>
+                        ${loc === 'Semua' ? 'Semua Wilayah Jawa Barat' : 'Kab. ' + loc}
+                      </option>
+                    `
+                      )
+                      .join('')}
+                  </select>
+                </div>
+
+                <div>
+                  <label class="text-xs font-bold text-tala-dark block mb-2">Tipe Penawaran</label>
+                  <div class="space-y-1.5">
+                    ${types
+                      .map(
+                        (t) => `
+                      <label class="flex items-center gap-2 text-xs cursor-pointer">
+                        <input type="radio" name="prodType" ${state.filterType === t ? 'checked' : ''} onchange="state.filterType='${t}'; renderApp();" class="accent-tala-primary" />
+                        <span>${t}</span>
+                      </label>
+                    `
+                      )
+                      .join('')}
+                  </div>
+                </div>
+
+                <div>
+                  <div class="flex justify-between text-xs mb-1.5">
+                    <span class="font-bold text-tala-dark">Harga Maksimal</span>
+                    <span class="font-semibold text-tala-primary">${formatRupiah(state.maxPrice)}</span>
+                  </div>
+                  <input type="range" min="10000" max="100000" step="5000" value="${state.maxPrice}" oninput="state.maxPrice=Number(this.value); renderApp();" class="w-full accent-tala-primary" />
+                </div>
+
+                <div class="p-4 rounded-xl bg-tala-softBlue border border-[#BAE6FD]">
+                  <p class="font-heading font-bold text-sm text-tala-sky">Ingin Kunci Harga Panen Mendatang?</p>
+                  <p class="text-xs text-tala-dark/80 mt-1 mb-3">Lihat komoditas yang akan panen 2–4 minggu lagi dengan harga terkunci.</p>
+                  <button onclick="navigateTo('preorder')" class="w-full py-2 rounded-lg bg-tala-sky text-white text-xs font-semibold hover:bg-tala-skyHover">
+                    Buka Pre-Order Pra-Panen
+                  </button>
+                </div>
+              </div>
+            </aside>
+
+            <!-- Grid Produk -->
+            <div class="lg:col-span-9">
+              <div class="flex items-center justify-between mb-4 text-xs text-tala-muted">
+                <span>Menampilkan <strong class="text-tala-dark">${filteredProducts.length}</strong> komoditas segar</span>
+                <span>Urutan: Panen Terbaru</span>
+              </div>
+
+              ${
+                filteredProducts.length === 0
+                  ? `<div class="bg-white rounded-2xl p-12 text-center border border-tala-border">
+                      <i data-lucide="sprout" class="w-12 h-12 text-[#7CB518] mx-auto mb-3"></i>
+                      <h3 class="font-heading font-bold text-lg text-tala-dark">Komoditas tidak ditemukan</h3>
+                      <p class="text-sm text-tala-muted mt-1">Coba ubah filter kategori atau kata kunci pencarian Anda.</p>
+                    </div>`
+                  : `<div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                      ${filteredProducts.map(renderProductCard).join('')}
+                    </div>`
+              }
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // HALAMAN 3: DETAIL PRODUK
+    function renderProductDetailPage() {
+      const product = PRODUCTS.find((p) => p.id === state.selectedProductId) || PRODUCTS[0];
+      const farmer = FARMERS.find((f) => f.id === product.farmerId) || FARMERS[0];
+      const activeImg = state.detailActiveImg || product.image;
+
+      const farmerNominal = Math.round(product.price * (product.breakdown.farmer / 100));
+      const logisticsNominal = Math.round(product.price * (product.breakdown.logistics / 100));
+      const packagingNominal = Math.round(product.price * (product.breakdown.packaging / 100));
+      const platformNominal = product.price - farmerNominal - logisticsNominal - packagingNominal;
+
+      return `
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+          <!-- Breadcrumb -->
+          <div class="flex items-center gap-2 text-xs text-tala-muted mb-6">
+            <button onclick="navigateTo('home')" class="hover:underline">Beranda</button>
+            <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+            <button onclick="navigateTo('catalog')" class="hover:underline">Katalog</button>
+            <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+            <span class="font-semibold text-tala-dark">${product.name}</span>
+          </div>
+
+          <div class="grid lg:grid-cols-12 gap-8 lg:gap-10 mb-12">
+            <!-- Galeri Foto -->
+            <div class="lg:col-span-6 space-y-3">
+              <div class="rounded-2xl overflow-hidden bg-white border border-tala-border h-[320px] sm:h-[420px]">
+                <img src="${activeImg}" alt="${product.name}" class="w-full h-full object-cover" />
+              </div>
+              ${
+                product.gallery && product.gallery.length > 1
+                  ? `<div class="flex gap-3">
+                      ${product.gallery
+                        .map(
+                          (imgUrl) => `
+                        <button onclick="state.detailActiveImg='${imgUrl}'; renderApp();" class="w-20 h-20 rounded-xl overflow-hidden border-2 ${
+                          activeImg === imgUrl ? 'border-tala-primary' : 'border-transparent'
+                        }">
+                          <img src="${imgUrl}" alt="" class="w-full h-full object-cover" />
+                        </button>
+                      `
+                        )
+                        .join('')}
+                    </div>`
+                  : ''
+              }
+            </div>
+
+            <!-- Informasi Utama -->
+            <div class="lg:col-span-6 flex flex-col justify-between">
+              <div>
+                <div class="flex flex-wrap items-center gap-2 mb-3">
+                  <span class="px-3 py-1 rounded-lg bg-tala-primary text-white text-xs font-semibold">${product.type}</span>
+                  ${product.isOrganic ? `<span class="px-3 py-1 rounded-lg bg-tala-softGreen text-tala-primary text-xs font-semibold">Budidaya Organik</span>` : ''}
+                  <span class="inline-flex items-center gap-1 text-xs font-semibold text-tala-dark ml-auto">
+                    <i data-lucide="star" class="w-4 h-4 fill-[#F59E0B] text-[#F59E0B]"></i>
+                    ${product.rating} (${product.reviewsCount} ulasan)
+                  </span>
+                </div>
+
+                <h1 class="font-heading text-2xl sm:text-4xl font-bold text-tala-dark leading-tight">${product.name}</h1>
+
+                <!-- Kartu Petani Mini -->
+                <div class="mt-4 p-3.5 rounded-2xl bg-white border border-tala-border flex items-center justify-between">
+                  <div onclick="navigateTo('farmer-profile', '${farmer.id}')" class="flex items-center gap-3 cursor-pointer">
+                    <img src="${farmer.avatar}" alt="${farmer.name}" class="w-11 h-11 rounded-full object-cover" />
+                    <div>
+                      <p class="text-sm font-bold text-tala-dark flex items-center gap-1">
+                        ${farmer.name}
+                        <i data-lucide="check-circle-2" class="w-4 h-4 text-tala-sky"></i>
+                      </p>
+                      <p class="text-xs text-tala-muted">${farmer.farmName} • ${product.location}</p>
+                    </div>
+                  </div>
+                  <button onclick="openChatWithFarmer('${farmer.id}')" class="px-3 py-2 rounded-xl bg-tala-softBlue text-tala-sky text-xs font-semibold hover:bg-[#d6ecf7] inline-flex items-center gap-1.5">
+                    <i data-lucide="message-square" class="w-3.5 h-3.5"></i>
+                    Tanya Petani
+                  </button>
+                </div>
+
+                <!-- Harga -->
+                <div class="mt-6 p-5 rounded-2xl bg-[#F2F7EE] border border-tala-border">
+                  <div class="flex items-baseline gap-3">
+                    <span class="font-heading text-3xl font-bold text-tala-primary">${formatRupiah(product.price)}</span>
+                    <span class="text-sm text-tala-muted">/ ${product.unit}</span>
+                    <span class="text-sm text-gray-400 line-through ml-auto">Pasar Umum: ${formatRupiah(product.marketPrice)}</span>
+                  </div>
+                  <p class="text-xs text-tala-primary font-medium mt-1.5">
+                    Stok tersedia di kebun: <strong>${product.stock} ${product.unit}</strong> • Siap dikirim besok pagi
+                  </p>
+                </div>
+
+                <p class="mt-5 text-sm text-tala-dark/85 leading-relaxed">${product.description}</p>
+              </div>
+
+              <!-- Kontrol Jumlah & Tombol Beli -->
+              <div class="mt-6 pt-5 border-t border-tala-border flex flex-col sm:flex-row gap-3">
+                <div class="flex items-center justify-between sm:justify-start bg-white border border-tala-border rounded-xl px-3 py-2">
+                  <button onclick="state.detailQty = Math.max(1, state.detailQty - 1); renderApp();" class="p-1.5 text-tala-primary hover:bg-[#F2F7EE] rounded-lg">
+                    <i data-lucide="minus" class="w-4 h-4"></i>
+                  </button>
+                  <span class="px-5 font-bold text-sm text-tala-dark">${state.detailQty}</span>
+                  <button onclick="state.detailQty = Math.min(${product.stock}, state.detailQty + 1); renderApp();" class="p-1.5 text-tala-primary hover:bg-[#F2F7EE] rounded-lg">
+                    <i data-lucide="plus" class="w-4 h-4"></i>
+                  </button>
+                </div>
+
+                <button onclick="addToCart('${product.id}', state.detailQty, false)" class="flex-1 py-3.5 px-6 rounded-xl bg-tala-primary text-white font-semibold text-sm hover:bg-tala-primaryHover transition-colors inline-flex items-center justify-center gap-2">
+                  <i data-lucide="shopping-basket" class="w-4 h-4"></i>
+                  <span>Tambah ke Keranjang (${formatRupiah(product.price * state.detailQty)})</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- KE MANA UANG ANDA PERGI -->
+          <section class="bg-white rounded-2xl p-6 sm:p-8 border border-tala-border mb-10">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+              <div>
+                <span class="px-3 py-1 rounded-lg bg-tala-softBlue text-tala-sky text-xs font-bold">Transparansi Harga Tala</span>
+                <h2 class="font-heading text-2xl font-bold text-tala-dark mt-2">Ke Mana Uang Anda Pergi?</h2>
+                <p class="text-sm text-tala-muted">
+                  Rincian terbuka setiap rupiah dari pembayaran <strong>${formatRupiah(product.price)}</strong> per ${product.unit}.
+                </p>
+              </div>
+              <div class="p-3.5 rounded-xl bg-[#FCE7F3] text-xs">
+                <p class="text-tala-dark/80">Jika dibeli lewat jalur tengkulak:</p>
+                <p class="font-bold text-tala-magenta text-sm mt-0.5">Petani hanya menerima ±${formatRupiah(product.middlemanFarmGate)}</p>
+              </div>
+            </div>
+
+            <!-- Diagram Batang -->
+            <div class="w-full h-7 rounded-xl overflow-hidden flex mb-6 bg-gray-100">
+              <div style="width: ${product.breakdown.farmer}%" class="bg-tala-primary flex items-center justify-center text-white text-xs font-bold">
+                ${product.breakdown.farmer}% Petani
+              </div>
+              <div style="width: ${product.breakdown.logistics}%" class="bg-tala-sky flex items-center justify-center text-white text-xs font-bold">
+                ${product.breakdown.logistics}%
+              </div>
+              <div style="width: ${product.breakdown.packaging}%" class="bg-tala-lime flex items-center justify-center text-tala-dark text-xs font-bold">
+                ${product.breakdown.packaging}%
+              </div>
+              <div style="width: ${product.breakdown.platform}%" class="bg-tala-magenta flex items-center justify-center text-white text-xs font-bold">
+                ${product.breakdown.platform}%
+              </div>
+            </div>
+
+            <!-- 4 Kartu Porsi -->
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div class="p-4 rounded-xl bg-tala-softGreen border border-[#B7D6A3]">
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="w-3 h-3 rounded-full bg-tala-primary"></span>
+                  <span class="text-xs font-bold text-tala-primary">Pendapatan Petani (${product.breakdown.farmer}%)</span>
+                </div>
+                <p class="font-heading text-xl font-bold text-tala-dark">${formatRupiah(farmerNominal)}</p>
+                <p class="text-xs text-tala-muted mt-1">+${formatRupiah(farmerNominal - product.middlemanFarmGate)} lebih tinggi dari harga tengkulak.</p>
+              </div>
+
+              <div class="p-4 rounded-xl bg-tala-bg border border-tala-border">
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="w-3 h-3 rounded-full bg-tala-sky"></span>
+                  <span class="text-xs font-bold text-tala-dark">Logistik Kebun–Kota (${product.breakdown.logistics}%)</span>
+                </div>
+                <p class="font-heading text-xl font-bold text-tala-dark">${formatRupiah(logisticsNominal)}</p>
+                <p class="text-xs text-tala-muted mt-1">Biaya angkut langsung dari lahan ke titik sortir lokal.</p>
+              </div>
+
+              <div class="p-4 rounded-xl bg-tala-bg border border-tala-border">
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="w-3 h-3 rounded-full bg-tala-lime"></span>
+                  <span class="text-xs font-bold text-tala-dark">Kemasan & Sortasi (${product.breakdown.packaging}%)</span>
+                </div>
+                <p class="font-heading text-xl font-bold text-tala-dark">${formatRupiah(packagingNominal)}</p>
+                <p class="text-xs text-tala-muted mt-1">Kardus daur ulang / jaring ramah lingkungan.</p>
+              </div>
+
+              <div class="p-4 rounded-xl bg-tala-bg border border-tala-border">
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="w-3 h-3 rounded-full bg-tala-magenta"></span>
+                  <span class="text-xs font-bold text-tala-dark">Operasional Tala (${product.breakdown.platform}%)</span>
+                </div>
+                <p class="font-heading text-xl font-bold text-tala-dark">${formatRupiah(platformNominal)}</p>
+                <p class="text-xs text-tala-muted mt-1">Pemeliharaan sistem, verifikasi lahan & rekening bersama.</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- JEJAK PRODUK & ULASAN -->
+          <section class="grid lg:grid-cols-12 gap-8 mb-10">
+            <div class="lg:col-span-8 bg-white rounded-2xl p-6 sm:p-8 border border-tala-border">
+              <h2 class="font-heading text-2xl font-bold text-tala-dark mb-2">Jejak Produk & Asal Lahan</h2>
+              <p class="text-sm text-tala-muted mb-6">
+                Kode Batch: <span class="font-mono font-bold text-tala-sky">${product.batchCode}</span>
+              </p>
+
+              <div class="grid sm:grid-cols-3 gap-4 mb-6">
+                <div class="p-4 rounded-xl bg-tala-bg border border-tala-border">
+                  <span class="text-xs text-tala-muted flex items-center gap-1.5 font-medium">
+                    <i data-lucide="sprout" class="w-4 h-4 text-tala-primary"></i> Tanggal Tanam
+                  </span>
+                  <p class="font-heading font-bold text-base text-tala-dark mt-1">${product.plantedDate}</p>
+                </div>
+                <div class="p-4 rounded-xl bg-tala-bg border border-tala-border">
+                  <span class="text-xs text-tala-muted flex items-center gap-1.5 font-medium">
+                    <i data-lucide="calendar" class="w-4 h-4 text-tala-sky"></i> Tanggal Panen
+                  </span>
+                  <p class="font-heading font-bold text-base text-tala-dark mt-1">${product.harvestDate}</p>
+                </div>
+                <div class="p-4 rounded-xl bg-tala-bg border border-tala-border">
+                  <span class="text-xs text-tala-muted flex items-center gap-1.5 font-medium">
+                    <i data-lucide="map-pin" class="w-4 h-4 text-tala-magenta"></i> Koordinat Lahan
+                  </span>
+                  <p class="font-heading font-bold text-base text-tala-dark mt-1">${product.location}</p>
+                </div>
+              </div>
+
+              <!-- Peta Sederhana -->
+              <div class="rounded-xl overflow-hidden border border-tala-border bg-tala-softBlue p-4 mb-5">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-bold text-tala-sky">Peta Lokasi Lahan Terverifikasi (Jawa Barat)</span>
+                  <span class="text-[11px] text-tala-muted">Jarak ke Jabodetabek/Bandung: ±58 km</span>
+                </div>
+                <svg viewBox="0 0 600 160" class="w-full h-36 rounded-lg bg-[#F0F9FF]">
+                  <path d="M0,120 Q150,70 300,110 T600,80 L600,160 L0,160 Z" fill="#A3E635" opacity="0.35" />
+                  <path d="M0,140 Q200,100 400,130 T600,115 L600,160 L0,160 Z" fill="#437A1E" opacity="0.25" />
+                  <path d="M140,85 C240,40 360,110 470,65" fill="none" stroke="#0284C7" stroke-width="3" stroke-dasharray="6,6" />
+                  <circle cx="140" cy="85" r="10" fill="#437A1E" />
+                  <circle cx="140" cy="85" r="18" fill="#437A1E" opacity="0.2" />
+                  <text x="85" y="115" fill="#162415" font-size="12" font-weight="bold">Kebun ${farmer.location.split(',')[0]}</text>
+                  <circle cx="470" cy="65" r="8" fill="#D9268A" stroke="#FFFFFF" stroke-width="2" />
+                  <text x="425" y="92" fill="#162415" font-size="12" font-weight="bold">Hub Konsumen</text>
+                </svg>
+              </div>
+
+              <div class="p-4 rounded-xl bg-[#F2F7EE] border-l-4 border-tala-primary">
+                <p class="text-xs font-bold text-tala-primary mb-1">Catatan dari ${farmer.name}:</p>
+                <p class="text-sm text-tala-dark/85 italic leading-relaxed">"${farmer.story}"</p>
+              </div>
+            </div>
+
+            <div class="lg:col-span-4 space-y-6">
+              <div class="bg-white rounded-2xl p-6 border border-tala-border text-center">
+                <div class="w-28 h-28 mx-auto rounded-2xl bg-tala-bg border-2 border-tala-primary flex items-center justify-center mb-3">
+                  <i data-lucide="qr-code" class="w-20 h-20 text-tala-primary"></i>
+                </div>
+                <h3 class="font-heading font-bold text-base text-tala-dark">Sertifikat Digital Panen</h3>
+                <p class="text-xs text-tala-muted mt-1">
+                  Pindai QR pada kemasan saat paket tiba untuk memverifikasi keaslian kebun dan mengirim tip apresiasi ke petani.
+                </p>
+              </div>
+
+              <div class="bg-white rounded-2xl p-6 border border-tala-border">
+                <h3 class="font-heading font-bold text-lg text-tala-dark mb-4">Ulasan Pembeli (${product.reviews.length})</h3>
+                ${
+                  product.reviews.length === 0
+                    ? `<p class="text-xs text-gray-500">Belum ada ulasan tertulis untuk batch panen minggu ini.</p>`
+                    : `<div class="space-y-4">
+                        ${product.reviews
+                          .map(
+                            (rev) => `
+                          <div class="pb-3 border-b border-gray-100 last:border-0 last:pb-0">
+                            <div class="flex items-center justify-between">
+                              <span class="text-xs font-bold text-tala-dark">${rev.user}</span>
+                              <span class="text-[11px] text-gray-400">${rev.date}</span>
+                            </div>
+                            <div class="flex items-center gap-0.5 my-1">
+                              ${Array(rev.rating).fill('<i data-lucide="star" class="w-3 h-3 fill-[#F59E0B] text-[#F59E0B]"></i>').join('')}
+                            </div>
+                            <p class="text-xs text-tala-muted">${rev.comment}</p>
+                          </div>
+                        `
+                          )
+                          .join('')}
+                      </div>`
+                }
+              </div>
+            </div>
+          </section>
+        </div>
+      `;
+    }
+
+    // HALAMAN 4: PRE-ORDER PRA-PANEN
+    function renderPreOrderPage() {
+      return `
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+          <div class="bg-tala-softBlue rounded-2xl p-6 sm:p-10 border border-[#BAE6FD] mb-10">
+            <div class="max-w-3xl">
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-tala-sky text-white text-xs font-semibold mb-3">
+                <i data-lucide="calendar" class="w-3.5 h-3.5"></i> Kepastian Pasar Sebelum Panen
+              </span>
+              <h1 class="font-heading text-3xl sm:text-4xl font-bold text-tala-dark">Pre-Order Pra-Panen</h1>
+              <p class="text-sm sm:text-base text-tala-dark/80 mt-2 leading-relaxed">
+                Pesan komoditas yang sedang tumbuh di kebun petani. Anda mendapatkan <strong>harga terkunci</strong> yang lebih hemat, sementara petani terhindar dari risiko hasil panen dibeli murah oleh tengkulak.
+              </p>
+            </div>
+          </div>
+
+          <div class="grid md:grid-cols-3 gap-8">
+            ${PREORDER_ITEMS.map((item) => {
+              const farmer = FARMERS.find((f) => f.id === item.farmerId);
+              const isBooked = state.bookedPreorderIds.includes(item.id);
+              const currentBooked = item.bookedQuota + (isBooked ? 1 : 0);
+              const progressPercent = Math.min(100, Math.round((currentBooked / item.targetQuota) * 100));
+
+              return `
+                <div class="bg-white rounded-2xl border border-tala-border overflow-hidden flex flex-col justify-between">
+                  <div>
+                    <div class="relative h-52">
+                      <img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover" />
+                      <div class="absolute top-3 left-3 px-3 py-1 rounded-lg bg-tala-sky text-white text-xs font-semibold">
+                        Panen ${item.daysLeft} Hari Lagi
+                      </div>
+                    </div>
+
+                    <div class="p-5">
+                      <p class="text-xs text-tala-sky font-semibold flex items-center gap-1 mb-1">
+                        <i data-lucide="map-pin" class="w-3.5 h-3.5"></i> ${item.location}
+                      </p>
+                      <h3 class="font-heading font-bold text-lg text-tala-dark">${item.name}</h3>
+                      ${
+                        farmer
+                          ? `<button onclick="navigateTo('farmer-profile', '${farmer.id}')" class="text-xs text-tala-primary font-semibold hover:underline mt-1 block">
+                              Petani: ${farmer.name} (${farmer.farmName})
+                            </button>`
+                          : ''
+                      }
+                      <p class="text-xs text-tala-muted mt-3 leading-relaxed">${item.description}</p>
+
+                      <div class="mt-4 p-3.5 rounded-xl bg-tala-bg border border-tala-border space-y-2.5">
+                        <div class="flex justify-between text-xs">
+                          <span class="text-tala-muted">Estimasi Panen:</span>
+                          <span class="font-bold text-tala-primary">${item.estimatedHarvest}</span>
+                        </div>
+                        <div>
+                          <div class="flex justify-between text-xs mb-1">
+                            <span class="font-medium text-tala-dark">Kuota Terkumpul</span>
+                            <span class="font-bold text-tala-magenta">
+                              ${currentBooked} / ${item.targetQuota} ${item.unit.split(' ')[0]} (${progressPercent}%)
+                            </span>
+                          </div>
+                          <div class="w-full h-2.5 rounded-full bg-gray-200 overflow-hidden">
+                            <div style="width: ${progressPercent}%" class="h-full bg-tala-primary rounded-full transition-all duration-500"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="p-5 pt-0">
+                    <div class="flex items-baseline justify-between mb-3 pt-3 border-t border-gray-100">
+                      <div>
+                        <span class="text-[11px] uppercase font-bold text-tala-sky block">Harga Terkunci</span>
+                        <span class="font-heading text-xl font-bold text-tala-primary">${formatRupiah(item.lockedPrice)}</span>
+                        <span class="text-xs text-gray-500"> / ${item.unit}</span>
+                      </div>
+                      <span class="text-xs text-gray-400 line-through">Est. Pasar ${formatRupiah(item.estimatedMarketPrice)}</span>
+                    </div>
+
+                    <button onclick="if(!state.bookedPreorderIds.includes('${item.id}')) state.bookedPreorderIds.push('${item.id}'); addToCart('${item.productRefId}', 1, true); renderApp();" class="w-full py-3 rounded-xl bg-tala-primary text-white text-sm font-semibold hover:bg-tala-primaryHover transition-colors">
+                      Pesan Sekarang (Kunci Harga)
+                    </button>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    // HALAMAN 5: PROFIL PETANI
+    function renderFarmerProfilePage() {
+      const farmer = FARMERS.find((f) => f.id === state.selectedFarmerId) || FARMERS[0];
+      const farmerProducts = PRODUCTS.filter((p) => p.farmerId === farmer.id);
+
+      return `
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div class="bg-white rounded-2xl border border-tala-border overflow-hidden mb-8">
+            <div class="h-48 sm:h-64 relative">
+              <img src="${farmer.cover}" alt="${farmer.farmName}" class="w-full h-full object-cover" />
+            </div>
+
+            <div class="px-6 pb-8 relative">
+              <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 -mt-12 mb-6">
+                <div class="flex flex-col sm:flex-row sm:items-end gap-4">
+                  <img src="${farmer.avatar}" alt="${farmer.name}" class="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl object-cover border-4 border-white bg-white" />
+                  <div>
+                    <div class="flex flex-wrap items-center gap-2">
+                      <h1 class="font-heading text-2xl sm:text-3xl font-bold text-tala-dark">${farmer.name}</h1>
+                      ${
+                        farmer.verified
+                          ? `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-tala-softBlue text-tala-sky text-xs font-bold">
+                              <i data-lucide="shield-check" class="w-3.5 h-3.5"></i> Lahan Terverifikasi
+                            </span>`
+                          : ''
+                      }
+                    </div>
+                    <p class="text-sm font-semibold text-tala-primary mt-0.5">${farmer.farmName} • ${farmer.location}</p>
+                  </div>
+                </div>
+
+                <button onclick="openChatWithFarmer('${farmer.id}')" class="px-5 py-2.5 rounded-xl bg-tala-primary text-white text-sm font-semibold hover:bg-tala-primaryHover inline-flex items-center gap-2 self-start md:self-auto">
+                  <i data-lucide="message-square" class="w-4 h-4"></i>
+                  Chat Langsung dengan Petani
+                </button>
+              </div>
+
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 p-4 rounded-2xl bg-tala-bg border border-tala-border mb-6">
+                <div>
+                  <span class="text-xs text-tala-muted block">Luas Lahan Kelola</span>
+                  <span class="font-heading font-bold text-lg text-tala-dark">${farmer.landSize}</span>
+                </div>
+                <div>
+                  <span class="text-xs text-tala-muted block">Pengalaman Bertani</span>
+                  <span class="font-heading font-bold text-lg text-tala-dark">${farmer.experience}</span>
+                </div>
+                <div>
+                  <span class="text-xs text-tala-muted block">Pesanan Tersalurkan</span>
+                  <span class="font-heading font-bold text-lg text-tala-primary">${farmer.totalOrders} Paket</span>
+                </div>
+                <div>
+                  <span class="text-xs text-tala-muted block">Penilaian Pembeli</span>
+                  <span class="font-heading font-bold text-lg text-tala-dark inline-flex items-center gap-1">
+                    <i data-lucide="star" class="w-4 h-4 fill-[#F59E0B] text-[#F59E0B]"></i> ${farmer.rating} / 5.0
+                  </span>
+                </div>
+              </div>
+
+              <div class="grid md:grid-cols-3 gap-6">
+                <div class="md:col-span-2">
+                  <h2 class="font-heading font-bold text-lg text-tala-dark mb-2">Kisah & Praktik Pertanian</h2>
+                  <p class="text-sm text-tala-muted leading-relaxed">${farmer.story}</p>
+                </div>
+                <div class="bg-[#F2F7EE] p-4 rounded-xl border border-tala-border">
+                  <h3 class="font-heading font-bold text-sm text-tala-primary mb-2">Verifikasi & Komoditas Utama</h3>
+                  <ul class="space-y-1.5 text-xs text-tala-dark">
+                    ${farmer.certifications
+                      .map((cert) => `<li class="flex items-center gap-1.5"><i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-tala-sky"></i> ${cert}</li>`)
+                      .join('')}
+                    ${farmer.commodities
+                      .map((com) => `<li class="flex items-center gap-1.5"><i data-lucide="leaf" class="w-3.5 h-3.5 text-tala-primary"></i> Komoditas: ${com}</li>`)
+                      .join('')}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <h2 class="font-heading text-2xl font-bold text-tala-dark mb-6">Hasil Panen dari ${farmer.farmName}</h2>
+          <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            ${farmerProducts.map(renderProductCard).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    // HALAMAN 6: KERANJANG & CHECKOUT
+    function renderCheckoutPage() {
+      const summary = getCartSummary();
+      const totalItems = state.cart.reduce((acc, i) => acc + i.qty, 0);
+
+      if (state.checkoutSuccess) {
+        return `
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <div class="bg-white rounded-2xl p-8 sm:p-12 border border-tala-border text-center max-w-2xl mx-auto">
+              <div class="w-16 h-16 rounded-full bg-tala-softGreen text-tala-primary flex items-center justify-center mx-auto mb-4">
+                <i data-lucide="check-circle-2" class="w-9 h-9"></i>
+              </div>
+              <h2 class="font-heading text-2xl font-bold text-tala-dark">Pesanan Berhasil Diteruskan ke Petani!</h2>
+              <p class="text-sm text-tala-muted mt-2 leading-relaxed">
+                Pembayaran Anda telah diamankan di Rekening Bersama Tala. Petani akan memanen pesanan Anda pada jadwal panen terdekat.
+              </p>
+              <div class="flex flex-wrap justify-center gap-3 mt-6">
+                <button onclick="navigateTo('tracking')" class="px-6 py-3 rounded-xl bg-tala-primary text-white text-sm font-semibold hover:bg-tala-primaryHover">
+                  Lacak Status Pesanan
+                </button>
+                <button onclick="navigateTo('catalog')" class="px-6 py-3 rounded-xl bg-tala-bg border border-tala-border text-tala-dark text-sm font-semibold">
+                  Lanjut Belanja
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      if (state.cart.length === 0) {
+        return `
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <div class="bg-white rounded-2xl p-12 text-center border border-tala-border">
+              <i data-lucide="shopping-basket" class="w-12 h-12 text-[#7CB518] mx-auto mb-3"></i>
+              <h2 class="font-heading font-bold text-xl text-tala-dark">Keranjang Anda Kosong</h2>
+              <p class="text-sm text-tala-muted mt-1 mb-5">Mari dukung petani lokal dengan memilih sayuran, buah, atau beras segar.</p>
+              <button onclick="navigateTo('catalog')" class="px-6 py-3 rounded-xl bg-tala-primary text-white text-sm font-semibold">
+                Jelajahi Katalog Panen
+              </button>
+            </div>
+          </div>
+        `;
+      }
+
+      return `
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+          <h1 class="font-heading text-3xl font-bold text-tala-dark mb-2">Keranjang & Pembayaran Aman</h1>
+          <p class="text-sm text-tala-muted mb-8">
+            Dilindungi sistem Rekening Bersama Tala: dana ditahan hingga Anda mengonfirmasi kesegaran produk.
+          </p>
+
+          <div class="grid lg:grid-cols-12 gap-8">
+            <div class="lg:col-span-7 space-y-6">
+              <!-- Daftar Item -->
+              <div class="bg-white rounded-2xl p-5 sm:p-6 border border-tala-border space-y-4">
+                <h2 class="font-heading font-bold text-lg text-tala-dark">Daftar Komoditas (${totalItems} item)</h2>
+                ${state.cart
+                  .map((item, index) => {
+                    const prod = PRODUCTS.find((p) => p.id === item.productId);
+                    if (!prod) return '';
+                    return `
+                      <div class="flex items-center justify-between gap-4 pb-4 border-b border-gray-100 last:border-0 last:pb-0">
+                        <div class="flex items-center gap-3.5">
+                          <img src="${prod.image}" alt="${prod.name}" class="w-16 h-16 rounded-xl object-cover" />
+                          <div>
+                            <div class="flex items-center gap-2">
+                              <h3 class="font-heading font-bold text-sm sm:text-base text-tala-dark">${prod.name}</h3>
+                              ${item.isPreOrder ? `<span class="px-2 py-0.5 rounded bg-tala-softBlue text-tala-sky text-[10px] font-bold">Pre-Order</span>` : ''}
+                            </div>
+                            <p class="text-xs text-tala-muted">${formatRupiah(prod.price)} / ${prod.unit} • Bagian Petani ${prod.breakdown.farmer}%</p>
+                          </div>
+                        </div>
+
+                        <div class="flex items-center gap-2">
+                          <button onclick="updateCartQty(${index}, -1)" class="p-1.5 rounded-lg bg-[#F2F7EE] hover:bg-[#e1eed7] text-tala-primary">
+                            <i data-lucide="minus" class="w-3.5 h-3.5"></i>
+                          </button>
+                          <span class="w-6 text-center text-sm font-bold">${item.qty}</span>
+                          <button onclick="updateCartQty(${index}, 1)" class="p-1.5 rounded-lg bg-[#F2F7EE] hover:bg-[#e1eed7] text-tala-primary">
+                            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                          </button>
+                          <button onclick="removeFromCart(${index})" class="p-1.5 text-gray-400 hover:text-tala-magenta ml-1">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                          </button>
+                        </div>
+                      </div>
+                    `;
+                  })
+                  .join('')}
+              </div>
+
+              <!-- Metode Pengiriman -->
+              <div class="bg-white rounded-2xl p-5 sm:p-6 border border-tala-border space-y-4">
+                <h2 class="font-heading font-bold text-lg text-tala-dark">Metode Penerimaan Panen</h2>
+                <div class="grid sm:grid-cols-2 gap-3">
+                  <button onclick="state.deliveryMethod='courier'; renderApp();" class="p-4 rounded-xl border text-left transition-all ${
+                    state.deliveryMethod === 'courier' ? 'border-tala-primary bg-tala-softGreen' : 'border-tala-border hover:border-[#7CB518]'
+                  }">
+                    <div class="flex items-center justify-between mb-1">
+                      <span class="font-bold text-sm text-tala-dark">Antar ke Rumah</span>
+                      <span class="text-xs font-bold text-tala-primary">Rp 15.000</span>
+                    </div>
+                    <p class="text-xs text-tala-muted">Kurir lokal berpendingin langsung ke alamat Anda (Estimasi H+1 pagi).</p>
+                  </button>
+
+                  <button onclick="state.deliveryMethod='pickup'; renderApp();" class="p-4 rounded-xl border text-left transition-all ${
+                    state.deliveryMethod === 'pickup' ? 'border-tala-primary bg-tala-softGreen' : 'border-tala-border hover:border-[#7CB518]'
+                  }">
+                    <div class="flex items-center justify-between mb-1">
+                      <span class="font-bold text-sm text-tala-dark">Titik Kumpul Komunitas</span>
+                      <span class="text-xs font-bold text-tala-sky">Mulai Rp 5.000</span>
+                    </div>
+                    <p class="text-xs text-tala-muted">Ambil di titik kumpul terdekat untuk ongkir lebih hemat dan rendah emisi.</p>
+                  </button>
+                </div>
+
+                ${
+                  state.deliveryMethod === 'pickup'
+                    ? `<div class="pt-2">
+                        <label class="text-xs font-bold text-tala-dark block mb-1.5">Pilih Lokasi Titik Kumpul:</label>
+                        <select onchange="state.selectedPickup=this.value; renderApp();" class="w-full p-2.5 rounded-xl border border-tala-border text-xs bg-tala-bg">
+                          ${PICKUP_POINTS.map(
+                            (pp) => `<option value="${pp.id}" ${state.selectedPickup === pp.id ? 'selected' : ''}>${pp.name} (${pp.area}) - Ongkir ${formatRupiah(pp.fee)}</option>`
+                          ).join('')}
+                        </select>
+                      </div>`
+                    : ''
+                }
+              </div>
+
+              <!-- Metode Pembayaran -->
+              <div class="bg-white rounded-2xl p-5 sm:p-6 border border-tala-border space-y-4">
+                <h2 class="font-heading font-bold text-lg text-tala-dark">Metode Pembayaran</h2>
+                <div class="grid grid-cols-3 gap-3">
+                  ${[
+                    { id: 'qris', label: 'QRIS Instan', icon: 'qr-code' },
+                    { id: 'transfer', label: 'Transfer Bank', icon: 'credit-card' },
+                    { id: 'ewallet', label: 'E-Wallet', icon: 'wallet' },
+                  ]
+                    .map(
+                      (m) => `
+                    <button onclick="state.paymentMethod='${m.id}'; renderApp();" class="p-3 rounded-xl border flex flex-col items-center gap-1.5 text-xs font-semibold ${
+                      state.paymentMethod === m.id ? 'border-tala-primary bg-tala-softGreen text-tala-primary' : 'border-tala-border text-tala-dark'
+                    }">
+                      <i data-lucide="${m.icon}" class="w-5 h-5"></i>
+                      <span>${m.label}</span>
+                    </button>
+                  `
+                    )
+                    .join('')}
+                </div>
+              </div>
+            </div>
+
+            <!-- Ringkasan Transparansi -->
+            <div class="lg:col-span-5">
+              <div class="bg-white rounded-2xl p-6 border border-tala-border space-y-5 sticky top-24">
+                <h2 class="font-heading font-bold text-xl text-tala-dark">Ringkasan Transparansi Pesanan</h2>
+                <div class="space-y-2.5 text-sm">
+                  <div class="flex justify-between text-tala-muted">
+                    <span>Subtotal Hasil Panen</span>
+                    <span>${formatRupiah(summary.subtotal)}</span>
+                  </div>
+                  <div class="flex justify-between text-tala-muted">
+                    <span>Biaya Pengiriman</span>
+                    <span>${formatRupiah(summary.shippingFee)}</span>
+                  </div>
+                  <div class="flex justify-between font-bold text-base text-tala-dark pt-3 border-t border-gray-100">
+                    <span>Total Pembayaran</span>
+                    <span class="font-heading text-tala-primary">${formatRupiah(summary.grandTotal)}</span>
+                  </div>
+                </div>
+
+                <div class="p-4 rounded-xl bg-tala-softGreen border border-[#B7D6A3] space-y-2">
+                  <div class="flex justify-between text-xs font-bold text-tala-primary">
+                    <span>Dana Diterima Langsung Petani:</span>
+                    <span>${formatRupiah(summary.totalFarmerShare)}</span>
+                  </div>
+                  <div class="flex justify-between text-xs font-semibold text-tala-sky">
+                    <span>Estimasi Penghematan Anda:</span>
+                    <span>${formatRupiah(summary.consumerSavings)}</span>
+                  </div>
+                </div>
+
+                <div class="p-3.5 rounded-xl bg-tala-bg border border-tala-border flex gap-3 items-start">
+                  <i data-lucide="shield-check" class="w-5 h-5 text-tala-sky shrink-0 mt-0.5"></i>
+                  <p class="text-xs text-tala-muted leading-relaxed">
+                    <strong>Jaminan Rekening Bersama:</strong> Dana Anda disimpan aman oleh sistem dan baru diteruskan ke petani setelah Anda mengklik tombol "Pesanan Diterima".
+                  </p>
+                </div>
+
+                <button onclick="handlePlaceOrder()" class="w-full py-3.5 rounded-xl bg-tala-primary text-white font-semibold text-sm hover:bg-tala-primaryHover transition-colors">
+                  Bayar Sekarang • ${formatRupiah(summary.grandTotal)}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // HALAMAN 7: PELACAKAN PESANAN
+    function renderTrackingPage() {
+      const timelineSteps = [
+        { label: 'Dipesan', desc: 'Pembayaran terverifikasi di rekening bersama' },
+        { label: 'Dipanen & Dikemas', desc: 'Petani memetik segar dan menyortir komoditas' },
+        { label: 'Dikirim', desc: 'Dalam perjalanan menuju alamat / titik kumpul' },
+        { label: 'Diterima Pembeli', desc: 'Paket telah sampai di tangan Anda' },
+        { label: 'Dana Diteruskan ke Petani', desc: 'Pembayaran penuh cair ke rekening petani' },
+      ];
+
+      return `
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+          <div class="mb-8">
+            <h1 class="font-heading text-3xl font-bold text-tala-dark">Pelacakan Pesanan & Pencairan Dana Petani</h1>
+            <p class="text-sm text-tala-muted mt-1">
+              Pantau perjalanan hasil panen dari kebun hingga pencairan dana transparan ke petani.
+            </p>
+          </div>
+
+          <div class="space-y-8">
+            ${state.orders
+              .map(
+                (order) => `
+              <div class="bg-white rounded-2xl p-6 sm:p-8 border border-tala-border">
+                <div class="flex flex-wrap items-center justify-between gap-4 pb-5 mb-6 border-b border-gray-100">
+                  <div>
+                    <span class="text-xs font-mono font-bold text-tala-sky">${order.id}</span>
+                    <h2 class="font-heading font-bold text-lg text-tala-dark">${order.farmerName}</h2>
+                    <p class="text-xs text-gray-500">${order.date}</p>
+                  </div>
+                  <div class="text-left sm:text-right">
+                    <span class="text-xs text-gray-500 block">Total Transaksi</span>
+                    <span class="font-heading font-bold text-lg text-tala-primary">${formatRupiah(order.total)}</span>
+                    <span class="text-xs text-tala-primary block font-medium">Bagian Petani: ${formatRupiah(order.farmerReceived)}</span>
+                  </div>
+                </div>
+
+                <div class="grid sm:grid-cols-5 gap-4 mb-6">
+                  ${timelineSteps
+                    .map((step, idx) => {
+                      const isDone = idx <= order.statusStep;
+                      const isCurrent = idx === order.statusStep;
+                      return `
+                        <div class="p-3.5 rounded-xl border ${isDone ? 'bg-tala-softGreen border-[#B7D6A3]' : 'bg-tala-bg border-gray-200 opacity-60'}">
+                          <div class="flex items-center gap-2 mb-1.5">
+                            <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${isDone ? 'bg-tala-primary text-white' : 'bg-gray-300 text-gray-600'}">
+                              ${isDone ? '<i data-lucide="check" class="w-3.5 h-3.5"></i>' : idx + 1}
+                            </div>
+                            ${isCurrent ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded bg-tala-sky text-white">Status Kini</span>` : ''}
+                          </div>
+                          <p class="font-bold text-xs text-tala-dark">${step.label}</p>
+                          <p class="text-[11px] text-tala-muted mt-0.5">${step.desc}</p>
+                        </div>
+                      `;
+                    })
+                    .join('')}
+                </div>
+
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4 border-t border-gray-100">
+                  <div class="text-xs text-tala-muted space-y-1">
+                    ${order.items.map((it) => `<p>• ${it.name} (${it.qty}x) — ${formatRupiah(it.price * it.qty)}</p>`).join('')}
+                  </div>
+                  ${
+                    order.statusStep < 4
+                      ? `<button onclick="handleConfirmReceived('${order.id}')" class="px-5 py-2.5 rounded-xl bg-tala-primary text-white text-xs font-semibold hover:bg-tala-primaryHover transition-colors shrink-0">
+                          Konfirmasi Pesanan Diterima & Teruskan Dana
+                        </button>`
+                      : `<span class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-tala-softGreen text-tala-primary text-xs font-bold">
+                          <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+                          Dana Telah Diterima Petani
+                        </span>`
+                  }
+                </div>
+              </div>
+            `
+              )
+              .join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    // HALAMAN 8: DASHBOARD PETANI
+    function updateCalculatorOutputs() {
+      const totalCost = Number(state.calcSeed) + Number(state.calcFertilizer) + Number(state.calcLabor) + Number(state.calcTransport);
+      const hppPerKg = state.calcYieldKg > 0 ? Math.round(totalCost / state.calcYieldKg) : 0;
+      const fairPrice = Math.round(hppPerKg * 1.35);
+      const middlemanPrice = Math.round(hppPerKg * 0.92);
+
+      const hppEl = document.getElementById('calc-out-hpp');
+      const fairEl = document.getElementById('calc-out-fair');
+      const midEl = document.getElementById('calc-out-mid');
+      if (hppEl) hppEl.textContent = `${formatRupiah(hppPerKg)} / kg`;
+      if (fairEl) fairEl.textContent = `${formatRupiah(fairPrice)} / kg`;
+      if (midEl) midEl.textContent = `±${formatRupiah(middlemanPrice)} / kg`;
+    }
+
+    function handleAddNewProduct(e) {
+      e.preventDefault();
+      const name = document.getElementById('new-prod-name').value.trim();
+      const category = document.getElementById('new-prod-cat').value;
+      const price = Number(document.getElementById('new-prod-price').value);
+      const unit = document.getElementById('new-prod-unit').value;
+      const stock = Number(document.getElementById('new-prod-stock').value);
+      const harvest = document.getElementById('new-prod-harvest').value;
+      const isPreOrder = document.getElementById('new-prod-preorder').checked;
+
+      if (!name || !price || !stock) return;
+
+      const created = {
+        id: `p-${Date.now()}`,
+        name,
+        category,
+        type: isPreOrder ? 'Pre-Order Pra-Panen' : 'Siap Panen',
+        isOrganic: true,
+        price,
+        marketPrice: Math.round(price * 1.32),
+        middlemanFarmGate: Math.round(price * 0.5),
+        unit,
+        stock,
+        location: 'Cisarua, Kab. Bogor',
+        farmerId: 'f1',
+        rating: 5.0,
+        reviewsCount: 1,
+        plantedDate: '01 Sep 2026',
+        harvestDate: harvest,
+        batchCode: `TALA-NEW-${Math.floor(100 + Math.random() * 899)}`,
+        image: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=800&q=80',
+        gallery: ['https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=800&q=80'],
+        description: 'Hasil panen segar yang baru diunggah langsung oleh mitra petani Tala.',
+        breakdown: { farmer: 79, logistics: 10, packaging: 5, platform: 6 },
+        reviews: [],
+      };
+
+      PRODUCTS.unshift(created);
+      showToast(`Produk "${created.name}" berhasil ditayangkan di katalog!`);
+      renderApp();
+    }
+
+    function renderFarmerDashboardPage() {
+      const totalCost = Number(state.calcSeed) + Number(state.calcFertilizer) + Number(state.calcLabor) + Number(state.calcTransport);
+      const hppPerKg = state.calcYieldKg > 0 ? Math.round(totalCost / state.calcYieldKg) : 0;
+      const fairPrice = Math.round(hppPerKg * 1.35);
+      const middlemanPrice = Math.round(hppPerKg * 0.92);
+
+      return `
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-tala-primary text-white p-6 sm:p-8 rounded-2xl">
+            <div>
+              <span class="text-xs font-bold uppercase tracking-wider text-[#BEF264]">Portal Mitra Petani Tala • Simulasi</span>
+              <h1 class="font-heading text-2xl sm:text-3xl font-bold mt-1">Selamat Pagi, Pak Hendra Sutisna</h1>
+              <p class="text-sm text-white/90 mt-1">Kebun Organik Cisarua • Status Rekening Bersama: Aktif & Terverifikasi</p>
+            </div>
+            <button onclick="navigateTo('catalog')" class="px-5 py-2.5 rounded-xl bg-white text-tala-primary font-semibold text-xs sm:text-sm self-start md:self-auto">
+              Lihat Tampilan Toko Saya
+            </button>
+          </div>
+
+          <!-- Metrik -->
+          <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            ${[
+              { label: 'Pendapatan Bulan Ini', val: 'Rp 14.850.000', sub: '+48% vs jual ke tengkulak' },
+              { label: 'Dana Rekening Bersama', val: 'Rp 1.420.000', sub: '3 pesanan dalam pengiriman' },
+              { label: 'Pesanan Baru Hari Ini', val: '12 Pesanan', sub: 'Perlu dipetik besok 05.30 WIB' },
+              { label: 'Total Komoditas Aktif', val: `${PRODUCTS.length} Produk`, sub: 'Stok total 375 unit' },
+            ]
+              .map(
+                (stat) => `
+              <div class="bg-white p-5 rounded-2xl border border-tala-border">
+                <span class="text-xs text-tala-muted font-medium">${stat.label}</span>
+                <p class="font-heading text-2xl font-bold text-tala-dark mt-1">${stat.val}</p>
+                <p class="text-xs text-tala-primary font-semibold mt-1">${stat.sub}</p>
+              </div>
+            `
+              )
+              .join('')}
+          </div>
+
+          <!-- KALKULATOR HARGA LAYAK & TREN HARGA -->
+          <div class="grid lg:grid-cols-12 gap-8">
+            <div class="lg:col-span-7 bg-white rounded-2xl p-6 sm:p-8 border border-tala-border">
+              <div class="flex items-center gap-2.5 mb-2">
+                <div class="w-9 h-9 rounded-xl bg-tala-softGreen text-tala-primary flex items-center justify-center">
+                  <i data-lucide="calculator" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <h2 class="font-heading text-xl font-bold text-tala-dark">Kalkulator Harga Layak Petani</h2>
+                  <p class="text-xs text-tala-muted">Hitung Harga Pokok Produksi (HPP) agar harga jual menutup seluruh modal dan jerih payah Anda.</p>
+                </div>
+              </div>
+
+              <div class="grid sm:grid-cols-2 gap-4 mt-5">
+                <div>
+                  <label class="text-xs font-bold text-tala-dark block mb-1">Biaya Benih / Bibit (Rp)</label>
+                  <input type="number" value="${state.calcSeed}" oninput="state.calcSeed=this.value; updateCalculatorOutputs();" class="w-full p-2.5 rounded-xl border border-tala-border text-sm bg-tala-bg" />
+                </div>
+                <div>
+                  <label class="text-xs font-bold text-tala-dark block mb-1">Biaya Pupuk & Perawatan (Rp)</label>
+                  <input type="number" value="${state.calcFertilizer}" oninput="state.calcFertilizer=this.value; updateCalculatorOutputs();" class="w-full p-2.5 rounded-xl border border-tala-border text-sm bg-tala-bg" />
+                </div>
+                <div>
+                  <label class="text-xs font-bold text-tala-dark block mb-1">Upah Tenaga Kerja & Rawat (Rp)</label>
+                  <input type="number" value="${state.calcLabor}" oninput="state.calcLabor=this.value; updateCalculatorOutputs();" class="w-full p-2.5 rounded-xl border border-tala-border text-sm bg-tala-bg" />
+                </div>
+                <div>
+                  <label class="text-xs font-bold text-tala-dark block mb-1">Biaya Panen & Angkut Lokal (Rp)</label>
+                  <input type="number" value="${state.calcTransport}" oninput="state.calcTransport=this.value; updateCalculatorOutputs();" class="w-full p-2.5 rounded-xl border border-tala-border text-sm bg-tala-bg" />
+                </div>
+                <div class="sm:col-span-2">
+                  <label class="text-xs font-bold text-tala-dark block mb-1">Estimasi Total Hasil Panen (kg)</label>
+                  <input type="number" value="${state.calcYieldKg}" oninput="state.calcYieldKg=this.value; updateCalculatorOutputs();" class="w-full p-2.5 rounded-xl border border-tala-border text-sm bg-tala-bg" />
+                </div>
+              </div>
+
+              <div class="mt-6 p-5 rounded-2xl bg-tala-softGreen border border-[#B7D6A3] grid sm:grid-cols-3 gap-4">
+                <div>
+                  <span class="text-xs text-tala-muted block">Modal Dasar (HPP)</span>
+                  <span id="calc-out-hpp" class="font-heading font-bold text-lg text-tala-dark">${formatRupiah(hppPerKg)} / kg</span>
+                </div>
+                <div>
+                  <span class="text-xs font-bold text-tala-primary block">Harga Layak Disarankan</span>
+                  <span id="calc-out-fair" class="font-heading font-bold text-xl text-tala-primary">${formatRupiah(fairPrice)} / kg</span>
+                  <span class="text-[11px] text-tala-primary block">Margin sejahtera 35%</span>
+                </div>
+                <div>
+                  <span class="text-xs text-tala-magenta block">Tawaran Tengkulak Umum</span>
+                  <span id="calc-out-mid" class="font-heading font-bold text-lg text-tala-magenta">±${formatRupiah(middlemanPrice)} / kg</span>
+                  <span class="text-[11px] text-tala-magenta block">Berisiko di bawah modal</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tren Harga -->
+            <div class="lg:col-span-5 bg-white rounded-2xl p-6 sm:p-8 border border-tala-border flex flex-col justify-between">
+              <div>
+                <div class="flex items-center gap-2.5 mb-2">
+                  <div class="w-9 h-9 rounded-xl bg-tala-softBlue text-tala-sky flex items-center justify-center">
+                    <i data-lucide="trending-up" class="w-5 h-5"></i>
+                  </div>
+                  <div>
+                    <h2 class="font-heading text-xl font-bold text-tala-dark">Tren Harga Komoditas Jabar</h2>
+                    <p class="text-xs text-tala-muted">Cabai Merah Keriting (4 Minggu Terakhir)</p>
+                  </div>
+                </div>
+
+                <div class="mt-5 p-4 rounded-xl bg-tala-bg border border-tala-border">
+                  <svg viewBox="0 0 360 150" class="w-full h-36">
+                    <line x1="30" y1="25" x2="340" y2="25" stroke="#e5e7eb" stroke-width="1" />
+                    <line x1="30" y1="65" x2="340" y2="65" stroke="#e5e7eb" stroke-width="1" />
+                    <line x1="30" y1="105" x2="340" y2="105" stroke="#e5e7eb" stroke-width="1" />
+                    <polyline fill="none" stroke="#437A1E" stroke-width="3" points="40,55 135,50 230,45 325,40" />
+                    <polyline fill="none" stroke="#D9268A" stroke-width="2.5" stroke-dasharray="5,4" points="40,95 135,112 230,88 325,105" />
+                    <circle cx="40" cy="55" r="4" fill="#437A1E" />
+                    <circle cx="135" cy="50" r="4" fill="#437A1E" />
+                    <circle cx="230" cy="45" r="4" fill="#437A1E" />
+                    <circle cx="325" cy="40" r="5" fill="#437A1E" />
+                    <text x="30" y="135" font-size="10" fill="#6b7280">Mgg 1</text>
+                    <text x="125" y="135" font-size="10" fill="#6b7280">Mgg 2</text>
+                    <text x="220" y="135" font-size="10" fill="#6b7280">Mgg 3</text>
+                    <text x="310" y="135" font-size="10" fill="#437A1E" font-weight="bold">Kini</text>
+                  </svg>
+                  <div class="flex items-center justify-between text-xs mt-2 pt-2 border-t border-gray-200">
+                    <span class="flex items-center gap-1.5 font-semibold text-tala-primary">
+                      <span class="w-3 h-1 bg-tala-primary inline-block"></span> Tala (Stabil Rp 29,6rb)
+                    </span>
+                    <span class="flex items-center gap-1.5 text-tala-magenta">
+                      <span class="w-3 h-1 bg-tala-magenta inline-block"></span> Tengkulak (Rp 19rb)
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-4 p-3.5 rounded-xl bg-tala-softBlue text-xs text-tala-dark/85">
+                <strong>Saran Musim Tanam:</strong> Permintaan cabai merah dan tomat organik diprediksi naik 22% menjelang Desember. Disarankan membuka slot Pre-Order.
+              </div>
+            </div>
+          </div>
+
+          <!-- FORM UNGGAH PRODUK PETANI -->
+          <div class="bg-white rounded-2xl p-6 sm:p-8 border border-tala-border">
+            <h2 class="font-heading text-2xl font-bold text-tala-dark mb-1">Unggah Hasil Panen Baru</h2>
+            <p class="text-sm text-tala-muted mb-6">Produk yang diunggah akan langsung muncul di Katalog Belanja untuk dilihat konsumen.</p>
+
+            <form onsubmit="handleAddNewProduct(event)" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div>
+                <label class="text-xs font-bold text-tala-dark block mb-1">Nama Komoditas *</label>
+                <input id="new-prod-name" type="text" required placeholder="Contoh: Buncis Baby Organik" class="w-full p-2.5 rounded-xl border border-tala-border text-sm bg-tala-bg" />
+              </div>
+              <div>
+                <label class="text-xs font-bold text-tala-dark block mb-1">Kategori</label>
+                <select id="new-prod-cat" class="w-full p-2.5 rounded-xl border border-tala-border text-sm bg-tala-bg">
+                  <option value="Sayur">Sayur</option>
+                  <option value="Buah">Buah</option>
+                  <option value="Beras & Biji">Beras & Biji</option>
+                  <option value="Rempah">Rempah</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-xs font-bold text-tala-dark block mb-1">Harga Jual Adil (Rp) *</label>
+                <input id="new-prod-price" type="number" required placeholder="Contoh: 18000" class="w-full p-2.5 rounded-xl border border-tala-border text-sm bg-tala-bg" />
+              </div>
+              <div>
+                <label class="text-xs font-bold text-tala-dark block mb-1">Satuan</label>
+                <select id="new-prod-unit" class="w-full p-2.5 rounded-xl border border-tala-border text-sm bg-tala-bg">
+                  <option value="kg">per kg</option>
+                  <option value="500 gr">per 500 gr</option>
+                  <option value="ikat">per ikat</option>
+                  <option value="sisir">per sisir</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-xs font-bold text-tala-dark block mb-1">Stok Tersedia *</label>
+                <input id="new-prod-stock" type="number" required placeholder="Contoh: 40" class="w-full p-2.5 rounded-xl border border-tala-border text-sm bg-tala-bg" />
+              </div>
+              <div>
+                <label class="text-xs font-bold text-tala-dark block mb-1">Tanggal / Estimasi Panen</label>
+                <input id="new-prod-harvest" type="text" value="25 Nov 2026" class="w-full p-2.5 rounded-xl border border-tala-border text-sm bg-tala-bg" />
+              </div>
+
+              <div class="sm:col-span-2 lg:col-span-3 flex flex-wrap items-center justify-between gap-4 pt-2">
+                <label class="flex items-center gap-2 text-xs font-medium text-tala-dark cursor-pointer">
+                  <input id="new-prod-preorder" type="checkbox" class="accent-tala-primary w-4 h-4" />
+                  <span>Buka sebagai Pre-Order Pra-Panen (Panen Mendatang)</span>
+                </label>
+                <button type="submit" class="px-6 py-3 rounded-xl bg-tala-primary text-white text-sm font-semibold hover:bg-tala-primaryHover transition-colors inline-flex items-center gap-2">
+                  <i data-lucide="plus" class="w-4 h-4"></i>
+                  <span>Tayangkan Produk Panen</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      `;
+    }
+
+    // HALAMAN 9: DASHBOARD DAMPAK KONSUMEN
+    function renderConsumerDashboardPage() {
+      return `
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+          <div class="bg-tala-softGreen rounded-2xl p-6 sm:p-8 border border-[#B7D6A3] flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <span class="text-xs font-bold uppercase tracking-wider text-tala-primary">Jejak Kontribusi Konsumen</span>
+              <h1 class="font-heading text-3xl font-bold text-tala-dark mt-1">Dashboard Dampak Belanja Anda</h1>
+              <p class="text-sm text-tala-muted mt-1">Terima kasih telah memilih rantai pasok pangan yang adil melalui Tala.</p>
+            </div>
+            <button onclick="navigateTo('tracking')" class="px-5 py-2.5 rounded-xl bg-tala-primary text-white text-xs sm:text-sm font-semibold self-start md:self-auto">
+              Lihat Riwayat & Lacak Pesanan
+            </button>
+          </div>
+
+          <div class="grid sm:grid-cols-3 gap-6">
+            <div class="bg-white p-6 rounded-2xl border border-tala-border">
+              <div class="w-11 h-11 rounded-xl bg-tala-softGreen text-tala-primary flex items-center justify-center mb-3">
+                <i data-lucide="heart-handshake" class="w-6 h-6"></i>
+              </div>
+              <span class="text-xs text-tala-muted font-medium">Tambahan Pendapatan Petani dari Belanja Anda</span>
+              <p class="font-heading text-3xl font-bold text-tala-primary mt-1">Rp 342.500</p>
+              <p class="text-xs text-tala-muted mt-1">Selisih lebih yang diterima petani dibanding menjual ke tengkulak.</p>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl border border-tala-border">
+              <div class="w-11 h-11 rounded-xl bg-tala-softBlue text-tala-sky flex items-center justify-center mb-3">
+                <i data-lucide="sprout" class="w-6 h-6"></i>
+              </div>
+              <span class="text-xs text-tala-muted font-medium">Keluarga Petani yang Anda Dukung</span>
+              <p class="font-heading text-3xl font-bold text-tala-dark mt-1">4 Petani Lokal</p>
+              <p class="text-xs text-tala-muted mt-1">Di wilayah Cisarua (Bogor), Warungkondang (Cianjur), & Cikembar.</p>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl border border-tala-border">
+              <div class="w-11 h-11 rounded-xl bg-[#FCE7F3] text-tala-magenta flex items-center justify-center mb-3">
+                <i data-lucide="leaf" class="w-6 h-6"></i>
+              </div>
+              <span class="text-xs text-tala-muted font-medium">Pangan Terselamatkan & Jejak Pendek</span>
+              <p class="font-heading text-3xl font-bold text-tala-dark mt-1">18,5 kg Pangan</p>
+              <p class="text-xs text-tala-muted mt-1">Termasuk 4 kg tomat "Kurang Sempurna" yang terselamatkan dari limbah.</p>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl p-6 border border-tala-border">
+            <h2 class="font-heading text-xl font-bold text-tala-dark mb-4">Petani yang Telah Anda Dukung</h2>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              ${FARMERS.map(
+                (f) => `
+                <div onclick="navigateTo('farmer-profile', '${f.id}')" class="p-4 rounded-xl bg-tala-bg border border-tala-border flex items-center gap-3 cursor-pointer hover:border-tala-primary">
+                  <img src="${f.avatar}" alt="${f.name}" class="w-12 h-12 rounded-full object-cover" />
+                  <div>
+                    <p class="font-bold text-sm text-tala-dark">${f.name}</p>
+                    <p class="text-xs text-tala-muted">${f.location}</p>
+                  </div>
+                </div>
+              `
+              ).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // HALAMAN 10: EDUKASI
+    function renderEducationPage() {
+      const activeArticle = ARTICLES.find((a) => a.id === state.selectedArticleId);
+
+      return `
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+          <div class="max-w-2xl mb-10">
+            <span class="text-xs font-bold uppercase tracking-wider text-tala-sky">Pusat Pengetahuan Pertanian Inovatif</span>
+            <h1 class="font-heading text-3xl sm:text-4xl font-bold text-tala-dark mt-1">Edukasi Budidaya, Pascapanen & Literasi Pasar</h1>
+            <p class="text-sm sm:text-base text-tala-muted mt-2">
+              Materi praktis untuk meningkatkan kualitas hasil panen petani sekaligus pemahaman pangan berkelanjutan bagi konsumen.
+            </p>
+          </div>
+
+          ${
+            activeArticle
+              ? `<div class="bg-white rounded-2xl p-6 sm:p-10 border border-tala-border max-w-4xl">
+                  <button onclick="state.selectedArticleId=null; renderApp();" class="text-xs font-bold text-tala-primary hover:underline mb-4 inline-flex items-center gap-1">
+                    ← Kembali ke Daftar Artikel
+                  </button>
+                  <img src="${activeArticle.image}" alt="${activeArticle.title}" class="w-full h-64 sm:h-80 object-cover rounded-2xl mb-6" />
+                  <div class="flex items-center gap-3 text-xs text-tala-muted mb-2">
+                    <span class="px-2.5 py-1 rounded-lg bg-tala-softGreen text-tala-primary font-bold">${activeArticle.category}</span>
+                    <span>${activeArticle.date}</span>
+                    <span>• ${activeArticle.readTime}</span>
+                  </div>
+                  <h2 class="font-heading text-2xl sm:text-3xl font-bold text-tala-dark mb-4">${activeArticle.title}</h2>
+                  <p class="text-base text-tala-dark/85 leading-relaxed">${activeArticle.content}</p>
+                </div>`
+              : `<div class="grid md:grid-cols-3 gap-8">
+                  ${ARTICLES.map(
+                    (art) => `
+                    <article class="bg-white rounded-2xl border border-tala-border overflow-hidden flex flex-col justify-between">
+                      <div>
+                        <img src="${art.image}" alt="${art.title}" class="w-full h-48 object-cover" />
+                        <div class="p-5">
+                          <div class="flex items-center justify-between text-xs text-tala-muted mb-2">
+                            <span class="font-bold text-tala-sky">${art.category}</span>
+                            <span>${art.readTime}</span>
+                          </div>
+                          <h2 class="font-heading font-bold text-lg text-tala-dark leading-snug mb-2">${art.title}</h2>
+                          <p class="text-xs text-tala-muted leading-relaxed">${art.excerpt}</p>
+                        </div>
+                      </div>
+                      <div class="px-5 pb-5">
+                        <button onclick="state.selectedArticleId='${art.id}'; renderApp();" class="w-full py-2.5 rounded-xl bg-tala-bg border border-tala-primary text-tala-primary text-xs font-semibold hover:bg-tala-primary hover:text-white transition-colors">
+                          Baca Selengkapnya
+                        </button>
+                      </div>
+                    </article>
+                  `
+                  ).join('')}
+                </div>`
+          }
+        </div>
+      `;
+    }
+
+    // HALAMAN 11: TENTANG KAMI & BANTUAN
+    function renderAboutAndHelpPage() {
+      const faqs = [
+        {
+          q: 'Bagaimana Tala memastikan tidak ada tengkulak yang menyamar?',
+          a: 'Tim lapangan kami melakukan survei fisik ke setiap lahan, memverifikasi kartu tani/kepemilikan garapan, serta mencocokkan kapasitas luas lahan dengan volume komoditas yang dijual.',
+        },
+        {
+          q: 'Bagaimana jika sayur atau buah yang diterima rusak di perjalanan?',
+          a: 'Karena menggunakan sistem Rekening Bersama, Anda dapat mengajukan klaim foto dalam 1x24 jam sebelum mengonfirmasi penerimaan untuk mendapatkan pengembalian dana atau penggantian panen berikutnya.',
+        },
+        {
+          q: 'Apakah petani dikenakan biaya pendaftaran untuk bergabung?',
+          a: 'Gratis 100%. Platform hanya mengambil kontribusi operasional 6% dari transaksi yang berhasil terjual, yang ditampilkan secara terbuka di setiap halaman produk.',
+        },
+      ];
+
+      return `
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-12">
+          <div class="bg-white rounded-2xl p-6 sm:p-10 border border-tala-border">
+            <div class="grid lg:grid-cols-12 gap-8 items-center">
+              <div class="lg:col-span-7 space-y-4">
+                <span class="px-3 py-1 rounded-full bg-tala-softGreen text-tala-primary text-xs font-bold">Tentang Tala (Tani Langsung)</span>
+                <h1 class="font-heading text-3xl sm:text-4xl font-bold text-tala-dark">
+                  Memutus Rantai Tengkulak, Memuliakan Petani Lokal
+                </h1>
+                <p class="text-sm sm:text-base text-tala-muted leading-relaxed">
+                  <strong>Tala</strong> (kependekan dari <em>Tani Langsung</em>) lahir dari keprihatinan atas panjangnya rantai distribusi pertanian di Indonesia. Petani menanggung seluruh risiko cuaca dan gagal panen selama berbulan-bulan, namun hanya menikmati 30–40% dari harga eceran akhir.
+                </p>
+                <p class="text-sm sm:text-base text-tala-muted leading-relaxed">
+                  Melalui digitalisasi rantai pasok pendek, fitur <em>Pre-Order Pra-Panen</em>, dan transparansi pembagian harga, Tala membangun ekosistem perdagangan pangan yang adil, segar, dan dapat dilacak asal-usulnya.
+                </p>
+              </div>
+              <div class="lg:col-span-5">
+                <img src="https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=800&q=80" alt="Lahan Pertanian Indonesia" class="w-full h-64 sm:h-72 object-cover rounded-2xl" />
+              </div>
+            </div>
+          </div>
+
+          <div class="grid lg:grid-cols-12 gap-8">
+            <div class="lg:col-span-6 space-y-4">
+              <h2 class="font-heading text-2xl font-bold text-tala-dark flex items-center gap-2">
+                <i data-lucide="help-circle" class="w-6 h-6 text-tala-sky"></i> Pertanyaan Umum (FAQ)
+              </h2>
+              <div class="space-y-3">
+                ${faqs
+                  .map(
+                    (item) => `
+                  <div class="bg-white p-5 rounded-2xl border border-tala-border">
+                    <h3 class="font-heading font-bold text-base text-tala-dark mb-1.5">${item.q}</h3>
+                    <p class="text-xs sm:text-sm text-tala-muted leading-relaxed">${item.a}</p>
+                  </div>
+                `
+                  )
+                  .join('')}
+              </div>
+            </div>
+
+            <div class="lg:col-span-6 bg-white p-6 sm:p-8 rounded-2xl border border-tala-border">
+              <h2 class="font-heading text-2xl font-bold text-tala-dark mb-1">Pusat Bantuan & Pengaduan</h2>
+              <p class="text-xs sm:text-sm text-tala-muted mb-5">
+                Punya kendala pesanan, pengajuan kemitraan kelompok tani, atau masukan? Sampaikan kepada tim Tala.
+              </p>
+
+              ${
+                state.complaintSent
+                  ? `<div class="p-6 rounded-2xl bg-tala-softGreen text-center space-y-2">
+                      <i data-lucide="check-circle-2" class="w-10 h-10 text-tala-primary mx-auto"></i>
+                      <h3 class="font-heading font-bold text-lg text-tala-dark">Laporan Anda Telah Diterima</h3>
+                      <p class="text-xs text-tala-muted">Tim pendamping Tala akan menghubungi Anda maksimal dalam 2 jam kerja.</p>
+                      <button onclick="state.complaintSent=false; renderApp();" class="mt-2 px-4 py-2 rounded-xl bg-tala-primary text-white text-xs font-semibold">
+                        Kirim Pesan Lain
+                      </button>
+                    </div>`
+                  : `<form onsubmit="event.preventDefault(); state.complaintSent=true; showToast('Pesan bantuan berhasil dikirim!'); renderApp();" class="space-y-4">
+                      <div>
+                        <label class="text-xs font-bold text-tala-dark block mb-1">Nama Lengkap / Kelompok Tani</label>
+                        <input type="text" required placeholder="Masukkan nama Anda" class="w-full p-2.5 rounded-xl border border-tala-border text-sm bg-tala-bg" />
+                      </div>
+                      <div>
+                        <label class="text-xs font-bold text-tala-dark block mb-1">Kategori Topik</label>
+                        <select class="w-full p-2.5 rounded-xl border border-tala-border text-sm bg-tala-bg">
+                          <option>Kualitas Produk & Garansi Kesegaran</option>
+                          <option>Pendaftaran Mitra Petani Baru</option>
+                          <option>Status Rekening Bersama & Pencairan</option>
+                          <option>Saran Pengembangan Platform</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label class="text-xs font-bold text-tala-dark block mb-1">Detail Pesan / Pengaduan</label>
+                        <textarea rows="4" required placeholder="Tuliskan nomor pesanan atau pertanyaan Anda secara rinci..." class="w-full p-2.5 rounded-xl border border-tala-border text-sm bg-tala-bg"></textarea>
+                      </div>
+                      <button type="submit" class="w-full py-3 rounded-xl bg-tala-primary text-white text-sm font-semibold hover:bg-tala-primaryHover transition-colors">
+                        Kirim Laporan Bantuan
+                      </button>
+                    </form>`
+              }
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // ------------------------------------------------------------------------
+    // 9. HEADER & MAIN RENDER CONTROLLER
+    // ------------------------------------------------------------------------
+    function updateHeaderUI() {
+      // Desktop Nav
+      const navItems = [
+        { id: 'home', label: 'Beranda' },
+        { id: 'catalog', label: 'Belanja' },
+        { id: 'preorder', label: 'Pre-Order' },
+        { id: 'education', label: 'Edukasi' },
+        { id: 'about', label: 'Tentang Kami' },
+      ];
+      document.getElementById('desktop-nav').innerHTML = navItems
+        .map(
+          (nav) => `
+        <button onclick="navigateTo('${nav.id}')" class="py-2 transition-colors relative ${
+          state.activePage === nav.id ? 'text-tala-primary font-bold' : 'text-tala-dark/80 hover:text-tala-primary'
+        }">
+          ${nav.label}
+          ${state.activePage === nav.id ? '<span class="absolute bottom-0 left-0 right-0 h-0.5 bg-tala-primary rounded-full"></span>' : ''}
+        </button>
+      `
+        )
+        .join('');
+
+      // Mobile Nav
+      const mobileItems = [
+        { id: 'home', label: 'Beranda' },
+        { id: 'catalog', label: 'Belanja Produk Tani' },
+        { id: 'preorder', label: 'Pre-Order Pra-Panen' },
+        { id: 'tracking', label: 'Lacak Pesanan' },
+        { id: 'consumer-dashboard', label: 'Dashboard Dampak Saya' },
+        { id: 'farmer-dashboard', label: 'Dashboard Petani (Simulasi)' },
+        { id: 'education', label: 'Edukasi Pertanian' },
+        { id: 'about', label: 'Tentang Kami & Bantuan' },
+      ];
+      document.getElementById('mobile-menu').innerHTML =
+        mobileItems
+          .map(
+            (item) => `
+          <button onclick="navigateTo('${item.id}')" class="block w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium ${
+            state.activePage === item.id ? 'bg-tala-primary text-white' : 'text-tala-dark hover:bg-[#F2F7EE]'
+          }">
+            ${item.label}
+          </button>
+        `
+          )
+          .join('') +
+        `<div class="pt-2"><button onclick="toggleMobileMenu(); toggleAuthModal(true);" class="w-full py-3 rounded-xl bg-tala-sky text-white font-semibold text-sm">Masuk / Daftar Akun</button></div>`;
+
+      // Switch Dasbor Buttons
+      const btnConsumer = document.getElementById('btn-nav-consumer');
+      const btnFarmer = document.getElementById('btn-nav-farmer');
+      btnConsumer.className = `px-2.5 py-1.5 rounded-lg font-medium transition-all ${
+        state.activePage === 'consumer-dashboard' ? 'bg-tala-primary text-white shadow-xs' : 'text-tala-dark/80 hover:text-tala-primary'
+      }`;
+      btnFarmer.className = `px-2.5 py-1.5 rounded-lg font-medium transition-all ${
+        state.activePage === 'farmer-dashboard' ? 'bg-tala-primary text-white shadow-xs' : 'text-tala-dark/80 hover:text-tala-primary'
+      }`;
+
+      // Cart Badge
+      const totalCart = state.cart.reduce((acc, i) => acc + i.qty, 0);
+      const badge = document.getElementById('cart-badge');
+      if (totalCart > 0) {
+        badge.textContent = totalCart;
+        badge.classList.remove('hidden');
+      } else {
+        badge.classList.add('hidden');
+      }
+    }
+
+    function renderApp() {
+      updateHeaderUI();
+      const content = document.getElementById('app-content');
+
+      switch (state.activePage) {
+        case 'home':
+          content.innerHTML = renderHomePage();
+          break;
+        case 'catalog':
+          content.innerHTML = renderCatalogPage();
+          break;
+        case 'product-detail':
+          content.innerHTML = renderProductDetailPage();
+          break;
+        case 'preorder':
+          content.innerHTML = renderPreOrderPage();
+          break;
+        case 'farmer-profile':
+          content.innerHTML = renderFarmerProfilePage();
+          break;
+        case 'checkout':
+          content.innerHTML = renderCheckoutPage();
+          break;
+        case 'tracking':
+          content.innerHTML = renderTrackingPage();
+          break;
+        case 'farmer-dashboard':
+          content.innerHTML = renderFarmerDashboardPage();
+          break;
+        case 'consumer-dashboard':
+          content.innerHTML = renderConsumerDashboardPage();
+          break;
+        case 'education':
+          content.innerHTML = renderEducationPage();
+          break;
+        case 'about':
+          content.innerHTML = renderAboutAndHelpPage();
+          break;
+        default:
+          content.innerHTML = renderHomePage();
+      }
+
+      lucide.createIcons();
+    }
+
+    // ------------------------------------------------------------------------
+    // 10. INITIALIZATION ON LOAD
+    // ------------------------------------------------------------------------
+    window.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('navbar-logo-container').innerHTML = getLogoHTML('h-12 sm:h-14');
+      document.getElementById('footer-logo-container').innerHTML = getLogoHTML('h-10');
+      renderChatWidget();
+      renderApp();
+    });
+  </script>
+</body>
+</html>
